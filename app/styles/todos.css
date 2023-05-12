@@ -3,3 +3,26 @@
   border: none;
   margin-left: 0.5rem;
 }
+
+.todos .add-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+
+  background-color: lightgray;
+  padding: 1rem;
+}
+
+.todos .add-area input {
+  border: 1px solid gray;
+  border-radius: 0.5rem;
+  width: 20rem;
+  padding: 0.5rem;
+}
+
+.todos .add-area .row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

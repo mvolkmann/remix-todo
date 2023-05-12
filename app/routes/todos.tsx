@@ -1,7 +1,7 @@
 import { type ActionFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
-import TodoForm, { links as todoFormLinks } from "~/components/TodoForm";
+// import TodoForm, { links as todoFormLinks } from "~/components/TodoForm";
 import Heading, { links as headingLinks } from "~/components/Heading";
 
 import styles from "~/styles/todos.css";
@@ -13,16 +13,24 @@ import type { V2_MetaFunction } from "@remix-run/node";
 
 // This function will only be present on the server and will run there.
 // It is triggered by all non-GET requests to this route.
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, params }) => {
+  console.log("todos.tsx action: params =", params);
   try {
+    let todos = await getTodos();
     const formData = await request.formData();
-    const todo = {
-      text: formData.get("text"),
-    };
-    const todos = await getTodos();
-    todos.push(todo);
-    await saveTodos(todos);
-    return redirect("/demo");
+    const intent = formData.get("intent") as string;
+
+    if (intent === "add") {
+      const todo = { text: formData.get("text") };
+      todos.push(todo);
+      await saveTodos(todos);
+    } else if (intent?.startsWith("delete-")) {
+      const index = Number(intent.split("-")[1]);
+      todos.splice(index, 1);
+      await saveTodos(todos);
+    }
+
+    return null;
   } catch (e) {
     console.error("todos.tsx action:", e);
   }
@@ -31,13 +39,15 @@ export const action: ActionFunction = async ({ request }) => {
 export const links = () => [
   { rel: "stylesheet", href: styles },
   ...headingLinks(),
-  ...todoFormLinks(),
+  // ...todoFormLinks(),
 ];
 
 // This function will only be present on the server and will run there.
 // It is triggered by all GET requests to this route.
-export function loader() {
-  return getTodos();
+export async function loader() {
+  const todos = await getTodos();
+  console.log("todos.tsx loader: todos =", todos);
+  return todos;
 }
 
 export const meta: V2_MetaFunction = () => {
@@ -45,29 +55,37 @@ export const meta: V2_MetaFunction = () => {
 };
 
 export default function Todos() {
+  console.log("todos.tsx Todos: entered");
   const todos: Todo[] = useLoaderData();
-
-  async function deleteTodo(index: number) {
-    console.log("deleteTodo: index =", index);
-    const newTodos = [...todos];
-    newTodos.splice(index, 1);
-    console.log("deleteTodo: newTodos =", newTodos);
-    await saveTodos(newTodos);
-    return redirect("/todos");
-  }
+  todos.sort((t1, t2) => t1.text.localeCompare(t2.text));
 
   return (
     <div className="todos">
       <Heading>Todos</Heading>
-      <TodoForm />
-      <ol>
-        {todos.map((todo, index: number) => (
-          <li key={index}>
-            {todo.text}
-            <button onClick={() => deleteTodo(index)}>🗑</button>
-          </li>
-        ))}
-      </ol>
+      <form method="post" id="todo-form">
+        <div className="add-area">
+          {/* TODO: Can this use only id or only name? */}
+          <input
+            id="text"
+            name="text"
+            placeholder="enter new todo here"
+            required
+          />
+          <button name="intent" value="add">
+            Add
+          </button>
+        </div>
+        <ol>
+          {todos.map((todo, index: number) => (
+            <li key={index}>
+              {todo.text}
+              <button name="intent" value={"delete-" + index}>
+                🗑
+              </button>
+            </li>
+          ))}
+        </ol>
+      </form>
     </div>
   );
 }
