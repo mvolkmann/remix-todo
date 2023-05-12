@@ -1,6 +1,9 @@
 import type { V2_MetaFunction } from "@remix-run/node";
 
 import Heading, { links as headingLinks } from "~/components/heading"; // don't need file extension
+
+// If you placed demo.css in the "routes" directory, you will get the error
+// "Cannot read properties of undefined (reading 'filter')".
 import styles from "~/styles/demo.css"; // do need file extension for CSS
 
 export const links = () => [
