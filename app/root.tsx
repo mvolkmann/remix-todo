@@ -8,6 +8,8 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import MainNav from "~/components/MainNav";
+
 import styles from "~/styles/global.css";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
@@ -27,6 +29,9 @@ export default function App() {
         <Links />
       </head>
       <body>
+        <header>
+          <MainNav />
+        </header>
         {/* This renders the content of the current page. */}
         <Outlet />
 
