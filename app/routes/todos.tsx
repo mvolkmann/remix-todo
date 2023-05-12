@@ -1,5 +1,5 @@
-import { type ActionFunction, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { type ActionFunction } from "@remix-run/node";
+import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 
 // import TodoForm, { links as todoFormLinks } from "~/components/TodoForm";
 import Heading, { links as headingLinks } from "~/components/Heading";
@@ -11,16 +11,20 @@ import type { Todo } from "~/types";
 
 import type { V2_MetaFunction } from "@remix-run/node";
 
+function sleep(seconds: number) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
 // This function will only be present on the server and will run there.
 // It is triggered by all non-GET requests to this route.
-export const action: ActionFunction = async ({ request, params }) => {
-  console.log("todos.tsx action: params =", params);
+export const action: ActionFunction = async ({ request }) => {
   try {
     let todos = await getTodos();
     const formData = await request.formData();
     const intent = formData.get("intent") as string;
 
     if (intent === "add") {
+      await sleep(1); // to demonstrate "isSubmitting" state
       const todo = { text: formData.get("text") };
       todos.push(todo);
       await saveTodos(todos);
@@ -28,6 +32,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       const index = Number(intent.split("-")[1]);
       todos.splice(index, 1);
       await saveTodos(todos);
+      // clearForm();
     }
 
     return null;
@@ -35,6 +40,12 @@ export const action: ActionFunction = async ({ request, params }) => {
     console.error("todos.tsx action:", e);
   }
 };
+
+/* function clearForm() {
+  const input = document.querySelector("#text");
+  console.log("clearForm: input =", input);
+  input.value = "";
+} */
 
 export const links = () => [
   { rel: "stylesheet", href: styles },
@@ -44,10 +55,8 @@ export const links = () => [
 
 // This function will only be present on the server and will run there.
 // It is triggered by all GET requests to this route.
-export async function loader() {
-  const todos = await getTodos();
-  console.log("todos.tsx loader: todos =", todos);
-  return todos;
+export function loader() {
+  return getTodos();
 }
 
 export const meta: V2_MetaFunction = () => {
@@ -55,14 +64,18 @@ export const meta: V2_MetaFunction = () => {
 };
 
 export default function Todos() {
-  console.log("todos.tsx Todos: entered");
   const todos: Todo[] = useLoaderData();
   todos.sort((t1, t2) => t1.text.localeCompare(t2.text));
+
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
 
   return (
     <div className="todos">
       <Heading>Todos</Heading>
-      <form method="post" id="todo-form">
+      {/* Using Form instead of form enables submitting the form
+          without a full page refresh. */}
+      <Form method="post" id="todo-form">
         <div className="add-area">
           {/* TODO: Can this use only id or only name? */}
           <input
@@ -71,8 +84,8 @@ export default function Todos() {
             placeholder="enter new todo here"
             required
           />
-          <button name="intent" value="add">
-            Add
+          <button disabled={isSubmitting} name="intent" value="add">
+            {isSubmitting ? "Adding ..." : "Add"}
           </button>
         </div>
         <ol>
@@ -85,7 +98,7 @@ export default function Todos() {
             </li>
           ))}
         </ol>
-      </form>
+      </Form>
     </div>
   );
 }
