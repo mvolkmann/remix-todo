@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import styles from "./Heading.css";
 
 // Remix only looks for "links" and "meta" functions in route components.
@@ -6,11 +7,15 @@ import styles from "./Heading.css";
 // This pattern is called "surfacing links" in the Remix docs.
 export const links = () => [{ rel: "stylesheet", href: styles }];
 
+type Props = {
+  children: ReactNode;
+};
+
 // This is used in root.tsx so it appears on every page.
-export default function Heading() {
+export default function Heading({ children }: Props) {
   return (
     <div className="heading">
-      <h2>My Heading</h2>
+      <h2>{children}</h2>
     </div>
   );
 }

@@ -10,6 +10,9 @@ function MainNav() {
         <li className="nav-item">
           <NavLink to="/demo">Demo</NavLink>
         </li>
+        <li className="nav-item">
+          <NavLink to="/todos">Todos</NavLink>
+        </li>
       </ul>
     </nav>
   );
