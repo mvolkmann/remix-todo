@@ -5,11 +5,15 @@ export const links = () => [{ rel: "stylesheet", href: styles }];
 export default function TodoForm() {
   return (
     <form method="post" id="todo-form">
-      <div>
-        <input id="text" name="text" required />
-      </div>
-      <div>
-        <button>Add Todo</button>
+      <div className="row">
+        {/* TODO: Can this use only id or only name? */}
+        <input
+          id="text"
+          name="text"
+          placeholder="enter new todo here"
+          required
+        />
+        <button>Add</button>
       </div>
     </form>
   );
