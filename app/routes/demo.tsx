@@ -20,10 +20,8 @@ export const meta: V2_MetaFunction = () => {
 
 export default function Demo() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Demo time!</h1>
-
-      <Heading />
+    <div>
+      <Heading>Demo Time!</Heading>
     </div>
   );
 }

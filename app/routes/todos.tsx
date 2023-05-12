@@ -14,15 +14,18 @@ import type { V2_MetaFunction } from "@remix-run/node";
 // This function will only be present on the server and will run there.
 // It is triggered by all non-GET requests to this route.
 export const action: ActionFunction = async ({ request }) => {
-  // TODO: Add error handling!
-  const formData = await request.formData();
-  const todo = {
-    text: formData.get("text"),
-  };
-  const todos = await getTodos();
-  todos.push(todo);
-  await saveTodos(todos);
-  // return redirect("/demo");
+  try {
+    const formData = await request.formData();
+    const todo = {
+      text: formData.get("text"),
+    };
+    const todos = await getTodos();
+    todos.push(todo);
+    await saveTodos(todos);
+    return redirect("/demo");
+  } catch (e) {
+    console.error("todos.tsx action:", e);
+  }
 };
 
 export const links = () => [
