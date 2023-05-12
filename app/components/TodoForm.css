@@ -1,0 +1,20 @@
+#todo-form {
+  background-color: lightgray;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+#todo-form input {
+  border: 1px solid gray;
+  border-radius: 0.5rem;
+  width: 20rem;
+  padding: 0.5rem;
+}
+
+#todo-form .row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
