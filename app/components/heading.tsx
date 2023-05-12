@@ -6,6 +6,7 @@ import styles from "./Heading.css";
 // This pattern is called "surfacing links" in the Remix docs.
 export const links = () => [{ rel: "stylesheet", href: styles }];
 
+// This is used in root.tsx so it appears on every page.
 export default function Heading() {
   return (
     <div className="heading">
