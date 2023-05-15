@@ -88,9 +88,8 @@ export default function Todos() {
           without a full page refresh. */}
       <Form method="post" id="todo-form">
         <div className="add-area">
-          {/* TODO: Can this use only id or only name? */}
+          {/* Note that the "id" prop is not needed, only "name". */}
           <input
-            id="text"
             name="text"
             onChange={e => setText(e.target.value)}
             placeholder="enter new todo here"
