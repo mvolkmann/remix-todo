@@ -82,6 +82,7 @@ export function loader({ request }) {
   // We could support a query parameter like this:
   // const query = new URL(request.url).searchParams.get('query') ?? '';
   // const todos = await searchTodos(query);
+  // Can also return other content types including plain text.
   // return json(todos);
 
   return getTodos();
