@@ -4,7 +4,7 @@ body {
 }
 
 button:disabled {
-  background-color: gray;
+  background-color: lightgray;
 }
 
 h1 {

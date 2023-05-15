@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { type ActionFunction } from "@remix-run/node";
+import { type ActionFunction, json } from "@remix-run/node";
 import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 
 // import TodoForm, { links as todoFormLinks } from "~/components/TodoForm";
@@ -26,11 +26,19 @@ export const action: ActionFunction = async ({ request }) => {
 
     if (intent === "add") {
       await sleep(1); // to demonstrate "isSubmitting" state
-      const todo = { text: formData.get("text") };
+      const id = Date.now()
+      const todo = { id, text: formData.get("text") };
       todos.push(todo);
       await saveTodos(todos);
     } else if (intent?.startsWith("delete-")) {
-      const index = Number(intent.split("-")[1]);
+      const id = Number(intent.split("-")[1]);
+      const index = todos.findIndex((t: Todo) => t.id === id)
+      if (index === -1) {
+        return json(
+          { message: `No todo with id ${id} found.` },
+          { status: 404 }
+        );
+      }
       todos.splice(index, 1);
       await saveTodos(todos);
       // clearForm();
@@ -88,6 +96,7 @@ export default function Todos() {
             placeholder="enter new todo here"
             value={text}
           />
+          {/* TODO: How can you clear the value of `text` after a new Todo is added.? */}
           <button
             disabled={text === '' || isSubmitting}
             name="intent"
@@ -97,10 +106,10 @@ export default function Todos() {
           </button>
         </div>
         <ol>
-          {todos.map((todo, index: number) => (
-            <li key={index}>
+          {todos.map(todo => (
+            <li key={todo.id}>
               {todo.text}
-              <button name="intent" value={"delete-" + index}>
+              <button name="intent" value={"delete-" + todo.id}>
                 🗑
               </button>
             </li>
