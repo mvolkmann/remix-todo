@@ -71,8 +71,22 @@ export const links = () => [
 // Because it runs on the server, there are never CORS issues.
 // This code can communicate directly with a database.
 // This function can be async.
+// A source file can define a "loader" function and
+// not export a React component.
+// In that case it is only defining an API endpoint.
 export function loader({ request }) {
+  // Could authenticate with something like
+  // await requireUserId(request);
+  // which could throw if the user is not authenticated.
+
+  // We could support a query parameter like this:
+  // const query = new URL(request.url).searchParams.get('query') ?? '';
+  // const todos = await searchTodos(query);
+  // return json(todos);
+
   return getTodos();
+  // TODO: Why doesn't this also work?
+  // return json(getTodos())
 }
 
 export const meta: V2_MetaFunction = () => {
