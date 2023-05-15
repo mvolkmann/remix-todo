@@ -11,10 +11,10 @@ function MainNav() {
           <NavLink to="/demo">Demo</NavLink>
         </li>
         <li className="nav-item">
-          <NavLink to="/todos">Todos</NavLink>
+          <NavLink prefetch="intent" to="/todos">Todos</NavLink>
         </li>
       </ul>
-    </nav>
+    </nav >
   );
 }
 
