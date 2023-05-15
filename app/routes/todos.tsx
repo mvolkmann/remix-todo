@@ -18,8 +18,11 @@ function sleep(seconds: number) {
 
 // This function will only be present on the server and will run there.
 // It is triggered by all non-GET requests to this route.
+// Note how the front and back end are implemented in the same file.
 export const action: ActionFunction = async ({ request }) => {
   try {
+    // No need to use the Fetch API or axios because
+    // we are already running in the server.
     let todos = await getTodos();
     const formData = await request.formData();
     const intent = formData.get("intent") as string;
@@ -44,7 +47,8 @@ export const action: ActionFunction = async ({ request }) => {
       // clearForm();
     }
 
-    return null;
+    return null; // stays on current page
+    // return redirect(path); // redirects to another page
   } catch (e) {
     console.error("todos.tsx action:", e);
   }
@@ -64,7 +68,10 @@ export const links = () => [
 
 // This function will only be present on the server and will run there.
 // It is triggered by all GET requests to this route.
-export function loader() {
+// Because it runs on the server, there are never CORS issues.
+// This code can communicate directly with a database.
+// This function can be async.
+export function loader({ request }) {
   return getTodos();
 }
 
@@ -81,6 +88,7 @@ export default function Todos() {
   const isSubmitting = navigation.state === "submitting";
 
   // Cannot use browser-only APIs because this code may run on the server.
+  // TODO: Add form validation logic.
   return (
     <div className="todos">
       <Heading>Todos</Heading>
@@ -95,14 +103,17 @@ export default function Todos() {
             placeholder="enter new todo here"
             value={text}
           />
-          {/* TODO: How can you clear the value of `text` after a new Todo is added.? */}
-          <button
-            disabled={text === '' || isSubmitting}
-            name="intent"
-            value="add"
-          >
-            {isSubmitting ? "Adding ..." : "Add"}
-          </button>
+          <div className="row">
+            {/* TODO: How can you clear the value of `text` after a new Todo is added.? */}
+            <button
+              disabled={text === '' || isSubmitting}
+              name="intent"
+              value="add"
+            >
+              {isSubmitting ? "Adding ..." : "Add"}
+            </button>
+            {isSubmitting && <div id="spinner"></div>}
+          </div>
         </div>
         <ol>
           {todos.map(todo => (
