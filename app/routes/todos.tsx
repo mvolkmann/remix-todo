@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { type ActionFunction } from "@remix-run/node";
 import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 
@@ -60,16 +61,18 @@ export function loader() {
 }
 
 export const meta: V2_MetaFunction = () => {
-  return [{ title: "Todos" }];
+  return [{ title: "Todos" }]; // sets the page title
 };
 
 export default function Todos() {
+  const [text, setText] = useState("");
   const todos: Todo[] = useLoaderData();
   todos.sort((t1, t2) => t1.text.localeCompare(t2.text));
 
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
+  // Cannot use browser-only APIs because this code may run on the server.
   return (
     <div className="todos">
       <Heading>Todos</Heading>
@@ -81,10 +84,15 @@ export default function Todos() {
           <input
             id="text"
             name="text"
+            onChange={e => setText(e.target.value)}
             placeholder="enter new todo here"
-            required
+            value={text}
           />
-          <button disabled={isSubmitting} name="intent" value="add">
+          <button
+            disabled={text === '' || isSubmitting}
+            name="intent"
+            value="add"
+          >
             {isSubmitting ? "Adding ..." : "Add"}
           </button>
         </div>

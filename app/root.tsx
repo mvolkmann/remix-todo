@@ -1,11 +1,13 @@
-import type { LinksFunction } from "@remix-run/node";
+import type { json, LinksFunction } from "@remix-run/node";
 import {
+  Link,
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  UseCatch
 } from "@remix-run/react";
 
 import MainNav from "~/components/MainNav";
@@ -13,6 +15,60 @@ import MainNav from "~/components/MainNav";
 import styles from "~/styles/global.css";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
+
+// Remix creates this component when an error occurs.
+// It replaces the content that would otherwise be rendered by <Outlet />.
+// Defining this in the root component makes it usable from any page.
+// This can also be defined differently in each page
+// for page-specific error rendering.
+// For page-specific error boundaries,
+// only the body content should be specified.
+// TODO: Are the html, head, and body tags really needed here?
+export function ErrorBoundary({ error }) {
+  return (
+    <html lang="en">
+      <head>
+        <Meta />
+        <Links />
+        <title>An error occurred.</title>
+      </head>
+      <body>
+        <header>
+          <MainNav />
+        </header>
+        <main className="error">
+          <h1>An error occurred.</h1>
+          <p>{error.message}</p>
+          <p>Back to <Link to="/">safety</Link>.</p>
+        </main>
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+        {process.env.NODE_ENV === "development" && <LiveReload />}
+      </body>
+    </html>
+  );
+}
+
+// This is similar to ErrorBoundary and like that we can define it
+// in the root component or in pages for page-specific handling.
+// Remix creates this component when a Response object is thrown.
+// If anything other than an error is thrown
+// then ErrorBoundary is used instead of CatchBoundary.
+// One place this could be done is in a loader function.  For example:
+// if (some-condition) {
+//   throw json( // creates a Response object
+//     {message: 'some-message'},
+//     {status: 404, statusText: 'some-status-text'}
+//   );
+// }
+export function CatchBoundary({ error }) {
+  const response = useCatch();
+  const message = response.data?.message || "unspecified error";
+  return <main>
+    <p>{message}</p>
+  </main>
+}
 
 export default function App() {
   return (

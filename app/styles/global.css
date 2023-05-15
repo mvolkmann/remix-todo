@@ -3,6 +3,10 @@ body {
   padding-top: 0;
 }
 
+button:disabled {
+  background-color: gray;
+}
+
 h1 {
   color: red;
 }
