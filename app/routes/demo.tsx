@@ -1,4 +1,4 @@
-import type { V2_MetaFunction } from "@remix-run/node";
+import type { LinksFunction, V2_MetaFunction } from "@remix-run/node";
 
 // Don't need file extension when importing JS/TS files.
 import Heading, { links as headingLinks } from "~/components/Heading";
@@ -8,7 +8,7 @@ import Heading, { links as headingLinks } from "~/components/Heading";
 // Do need file extension when importing CSS files.
 import styles from "~/styles/demo.css";
 
-export const links = () => [
+export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
   // This pattern is called "surfacing links" in the Remix docs.
   ...headingLinks(),

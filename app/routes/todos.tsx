@@ -1,6 +1,15 @@
 import { useState } from 'react';
-import { type ActionFunction, json } from "@remix-run/node";
-import { Form, useLoaderData, useNavigation } from "@remix-run/react";
+import {
+  type ActionFunction,
+  type LinksFunction,
+  json
+} from "@remix-run/node";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useNavigation
+} from "@remix-run/react";
 
 // import TodoForm, { links as todoFormLinks } from "~/components/TodoForm";
 import Heading, { links as headingLinks } from "~/components/Heading";
@@ -12,47 +21,59 @@ import type { Todo } from "~/types";
 
 import type { V2_MetaFunction } from "@remix-run/node";
 
-function sleep(seconds: number) {
-  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+type ActionData = {
+  fields: { text?: string },
+  fieldErrors: { text?: string },
+  formError?: string
 }
 
 // This function will only be present on the server and will run there.
 // It is triggered by all non-GET requests to this route.
 // Note how the front and back end are implemented in the same file.
-export const action: ActionFunction = async ({ request }) => {
-  try {
-    // No need to use the Fetch API or axios because
-    // we are already running in the server.
-    let todos = await getTodos();
-    const formData = await request.formData();
-    const intent = formData.get("intent") as string;
+export const action: ActionFunction =
+  async ({ request }): Promise<Response | ActionData> => {
+    try {
+      // No need to use the Fetch API or axios because
+      // we are already running in the server.
+      let todos = await getTodos();
+      const formData = await request.formData();
+      const intent = formData.get("intent") as string;
 
-    if (intent === "add") {
-      await sleep(1); // to demonstrate "isSubmitting" state
-      const id = Date.now()
-      const todo = { id, text: formData.get("text") };
-      todos.push(todo);
-      await saveTodos(todos);
-    } else if (intent?.startsWith("delete-")) {
-      const id = Number(intent.split("-")[1]);
-      const index = todos.findIndex((t: Todo) => t.id === id)
-      if (index === -1) {
-        return json(
-          { message: `No todo with id ${id} found.` },
-          { status: 404 }
-        );
+      if (intent === "add") {
+        await sleep(1); // to demonstrate "isSubmitting" state
+
+        const text = formData.get("text");
+        const fieldErrors = {
+          text: validateText(text)
+        }
+        if (Object.values(fieldErrors).some(Boolean)) {
+          return { fieldErrors, fields: { text } };
+        }
+
+        const id = Date.now()
+        const todo = { id, text };
+        todos.push(todo);
+        await saveTodos(todos);
+      } else if (intent?.startsWith("delete-")) {
+        const id = Number(intent.split("-")[1]);
+        const index = todos.findIndex((t: Todo) => t.id === id)
+        if (index === -1) {
+          return json(
+            { message: `No todo with id ${id} found.` },
+            { status: 404 }
+          );
+        }
+        todos.splice(index, 1);
+        await saveTodos(todos);
+        // clearForm();
       }
-      todos.splice(index, 1);
-      await saveTodos(todos);
-      // clearForm();
-    }
 
-    return null; // stays on current page
-    // return redirect(path); // redirects to another page
-  } catch (e) {
-    console.error("todos.tsx action:", e);
-  }
-};
+      return null; // stays on current page
+      // return redirect(path); // redirects to another page
+    } catch (e) {
+      console.error("todos.tsx action:", e);
+    }
+  };
 
 /* function clearForm() {
   const input = document.querySelector("#text");
@@ -60,7 +81,7 @@ export const action: ActionFunction = async ({ request }) => {
   input.value = "";
 } */
 
-export const links = () => [
+export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
   ...headingLinks(),
   // ...todoFormLinks(),
@@ -94,8 +115,19 @@ export const meta: V2_MetaFunction = () => {
   return [{ title: "Todos" }]; // sets the page title
 };
 
+function sleep(seconds: number) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
+function validateText(text: string) {
+  if (text.length < 3) {
+    return "Todo text must be at least three characters."
+  }
+}
+
 export default function Todos() {
   const [text, setText] = useState("");
+  const actionData = useActionData<ActionData>();
   const todos: Todo[] = useLoaderData();
   todos.sort((t1, t2) => t1.text.localeCompare(t2.text));
 
@@ -118,6 +150,9 @@ export default function Todos() {
             placeholder="enter new todo here"
             value={text}
           />
+          {actionData?.fieldErrors.text && (
+            <div className="error">Error: {actionData.fieldErrors.text}</div>
+          )}
           <div className="row">
             {/* TODO: How can you clear the value of `text` after a new Todo is added.? */}
             <button

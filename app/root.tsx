@@ -1,4 +1,4 @@
-import type { json, LinksFunction } from "@remix-run/node";
+import { json, type LinksFunction } from "@remix-run/node";
 import {
   Link,
   Links,

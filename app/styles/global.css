@@ -7,8 +7,12 @@ button:disabled {
   background-color: lightgray;
 }
 
-h1 {
+.error {
   color: red;
+}
+
+h1 {
+  color: purple;
 }
 
 #main-nav ul {
