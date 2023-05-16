@@ -47,7 +47,7 @@ export const action: ActionFunction =
           text: validateText(text)
         }
         if (Object.values(fieldErrors).some(Boolean)) {
-          return { fieldErrors, fields: { text } };
+          return { formError: "Invalid data found.", fieldErrors };
         }
 
         const id = Date.now()
@@ -134,6 +134,9 @@ export default function Todos() {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
+  const { formError, fieldErrors } = actionData ?? {};
+  const textError = fieldErrors?.text
+
   // Cannot use browser-only APIs because this code may run on the server.
   // TODO: Add form validation logic.
   return (
@@ -150,8 +153,8 @@ export default function Todos() {
             placeholder="enter new todo here"
             value={text}
           />
-          {actionData?.fieldErrors.text && (
-            <div className="error">Error: {actionData.fieldErrors.text}</div>
+          {textError && (
+            <div className="error">{textError}</div>
           )}
           <div className="row">
             {/* TODO: How can you clear the value of `text` after a new Todo is added.? */}
@@ -163,6 +166,7 @@ export default function Todos() {
               {isSubmitting ? "Adding ..." : "Add"}
             </button>
             {isSubmitting && <div id="spinner"></div>}
+            {formError && <div className="error">{formError}</div>}
           </div>
         </div>
         <ol>
