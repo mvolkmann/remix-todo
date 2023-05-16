@@ -25,6 +25,7 @@ export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 // only the body content should be specified.
 // TODO: Are the html, head, and body tags really needed here?
 export function ErrorBoundary({ error }) {
+  console.log('root.tsx ErrorBoundary: error =', error);
   return (
     <html lang="en">
       <head>
@@ -38,7 +39,7 @@ export function ErrorBoundary({ error }) {
         </header>
         <main className="error">
           <h1>An error occurred.</h1>
-          <p>{error.message}</p>
+          <p>{error?.message ?? "unknown"}</p>
           <p>Back to <Link to="/">safety</Link>.</p>
         </main>
         <Outlet />

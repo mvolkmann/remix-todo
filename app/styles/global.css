@@ -3,6 +3,11 @@ body {
   padding-top: 0;
 }
 
+button {
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
 button:disabled {
   background-color: lightgray;
 }
@@ -13,6 +18,11 @@ button:disabled {
 
 h1 {
   color: purple;
+}
+
+input {
+  border-radius: 0.5rem;
+  padding: 0.5rem;
 }
 
 #main-nav ul {
