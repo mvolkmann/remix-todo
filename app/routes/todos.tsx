@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { KeyboardEventHandler, useState } from 'react';
 import {
   type ActionFunction,
   type LinksFunction,
@@ -29,6 +29,12 @@ type ActionData = {
   formError?: string
 }
 
+type MyFormData = {
+  addText: string,
+  intent: string,
+  updateText: string
+}
+
 let editId = -1;
 
 // This function will only be present on the server and will run there.
@@ -45,7 +51,7 @@ export const action: ActionFunction = async ({ request }) => {
     // const intent = formData.get("intent") as string;
 
     // This is another way to get data from formData.
-    const values = Object.fromEntries(formData);
+    const values = Object.fromEntries(formData) as MyFormData;
     const { addText, intent, updateText } = values;
 
     if (intent === "add") {
@@ -83,7 +89,7 @@ async function addTodo(text: string) {
   }
 
   const id = Date.now()
-  const todo = { id, text };
+  const todo: Todo = { done: false, id, text };
   let todos = await getTodos();
   todos.push(todo);
   await saveTodos(todos);
@@ -182,7 +188,6 @@ function validateText(text: string | undefined) {
 export default function Todos() {
   const [text, setText] = useState("");
 
-  const data = useLoaderData();
   const { editId, todos } = useLoaderData();
   todos.sort((t1: Todo, t2: Todo) => t1.text.localeCompare(t2.text));
 
@@ -194,14 +199,18 @@ export default function Todos() {
   const { formError, fieldErrors } = actionData ?? {};
   const textError = fieldErrors?.text
 
+  function getButton(selector: string): HTMLButtonElement {
+    return document.querySelector(selector) as HTMLButtonElement;
+  }
+
   function handleKeyUp(event: KeyboardEvent) {
     if (event.key === "Enter") {
       // Simulate pressing the green check mark.
-      const button = document.querySelector('.button-green') as HTMLButtonElement;
+      const button = getButton('.button-green');
       if (button) button.click();
     } else if (event.key === "Escape") {
       // Simulate pressing the red "X".
-      const button = document.querySelector('.button-red') as HTMLButtonElement;
+      const button = getButton('.button-red');
       if (button) button.click();
     }
   }
@@ -214,18 +223,14 @@ export default function Todos() {
           without a full page refresh. */}
       <Form method="post" id="todo-form" reloadDocument>
         <div className="add-area">
-          {/* Note that the "id" prop is not needed, only "name". */}
-          <input
-            name="addText"
-            onChange={e => setText(e.target.value)}
-            placeholder="enter new todo here"
-            value={text}
-          />
-          {textError && (
-            <div className="error">{textError}</div>
-          )}
           <div className="row">
-            {/* TODO: How can you clear the value of `text` after a new Todo is added.? */}
+            {/* Note that the "id" prop is not needed, only "name". */}
+            <input
+              name="addText"
+              onChange={e => setText(e.target.value)}
+              placeholder="enter new todo here"
+              value={text}
+            />
             <button
               disabled={text === '' || isSubmitting}
               name="intent"
@@ -234,27 +239,48 @@ export default function Todos() {
               {isSubmitting ? "Adding ..." : "Add"}
             </button>
             {isSubmitting && <div id="spinner"></div>}
-            {formError && <div className="error">{formError}</div>}
           </div>
+
+          {textError && (
+            <div className="error">{textError}</div>
+          )}
+
+          {formError && <div className="error">{formError}</div>}
         </div>
         <ol>
-          {todos.map(todo => (
+          {todos.map((todo: Todo) => (
             <li key={todo.id}>
               <div>
                 {todo.id === editId ?
-                  <input name="updateText" defaultValue={todo.text} onKeyUp={handleKeyUp} /> :
+                  <input
+                    name="updateText"
+                    defaultValue={todo.text}
+                    onKeyUp={handleKeyUp}
+                  /> :
                   <div>{todo.text}</div>
                 }
                 {todo.id === editId ?
                   <div>
-                    <button className="button-green" name="intent" value={"update-" + todo.id}>
+                    <button
+                      className="button-green"
+                      name="intent"
+                      value={"update-" + todo.id}
+                    >
                       ✓
                     </button>
-                    <button className="button-red" name="intent" value={"edit--1"}>
+                    <button
+                      className="button-red"
+                      name="intent"
+                      value={"edit--1"}
+                    >
                       ✖
                     </button>
                   </div> :
-                  <button className="button-blue" name="intent" value={"edit-" + todo.id}>
+                  <button
+                    className="button-blue"
+                    name="intent"
+                    value={"edit-" + todo.id}
+                  >
                     ✎
                   </button>
                 }
@@ -265,7 +291,7 @@ export default function Todos() {
             </li>
           ))}
         </ol>
-      </Form>
+      </Form >
       <Form method="post" id="color-form" onChange={handleChange}>
         <input
           id="color-input"
@@ -274,6 +300,6 @@ export default function Todos() {
         />
         <button name="intent" value="color">Save Color</button>
       </Form>
-    </div>
+    </div >
   );
 }
