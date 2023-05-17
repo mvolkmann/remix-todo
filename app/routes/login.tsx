@@ -1,3 +1,4 @@
+// import { useContext } from 'react';
 import {
   type ActionFunction,
   type LinksFunction,
@@ -11,6 +12,7 @@ import {
   useNavigation
 } from "@remix-run/react";
 
+// import AppContext from '~/AppContext';
 import styles from "~/styles/login.css";
 
 type ActionData = {
@@ -75,6 +77,7 @@ function validateUsername(username: string) {
 }
 
 export default function Login() {
+  // const { username, setUsername } = useContext(AppContext);
   const actionData = useActionData<ActionData>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
@@ -82,7 +85,7 @@ export default function Login() {
   const { formError, fieldErrors } = actionData ?? {};
   const usernameError = fieldErrors?.username
   const passwordError = fieldErrors?.password
-  console.log('login.tsx Login: formError =', formError);
+  // console.log('login.tsx Login: context.foo =', context.foo);
 
   return (
     <div className="login">

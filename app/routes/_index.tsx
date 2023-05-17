@@ -6,6 +6,7 @@ export const meta: V2_MetaFunction = () => {
 };
 
 export default function Index() {
+  const color = sessionStorage?.getItem('color');
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
       <h1>Welcome to Remix!</h1>
@@ -43,6 +44,7 @@ export default function Index() {
           <Link to="/login">Login</Link>
         </li>
       </ul>
+      {color && <p>I see you like the color {color}.</p>}
     </div>
   );
 }

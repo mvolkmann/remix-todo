@@ -2,7 +2,9 @@ import { useState } from 'react';
 import {
   type ActionFunction,
   type LinksFunction,
-  json
+  type LoaderArgs,
+  json,
+  redirect
 } from "@remix-run/node";
 import {
   Form,
@@ -30,56 +32,81 @@ type ActionData = {
 // This function will only be present on the server and will run there.
 // It is triggered by all non-GET requests to this route.
 // Note how the front and back end are implemented in the same file.
-export const action: ActionFunction =
-  async ({ request }): Promise<Response | ActionData> => {
-    try {
-      // No need to use the Fetch API or axios because
-      // we are already running in the server.
-      let todos = await getTodos();
-      const formData = await request.formData();
-      const intent = formData.get("intent") as string;
+export const action: ActionFunction = async ({ request }) => {
+  try {
+    // No need to use the Fetch API or axios because
+    // we are already running in the server.
 
-      if (intent === "add") {
-        await sleep(1); // to demonstrate "isSubmitting" state
+    const formData = await request.formData();
 
-        const text = formData.get("text");
-        const fieldErrors = {
-          text: validateText(text)
-        }
-        if (Object.values(fieldErrors).some(Boolean)) {
-          return { formError: "Invalid data found.", fieldErrors };
-        }
+    const intent = formData.get("intent") as string;
+    console.log('todos.tsx action: intent =', intent);
 
-        const id = Date.now()
-        const todo = { id, text };
-        todos.push(todo);
-        await saveTodos(todos);
-      } else if (intent?.startsWith("delete-")) {
-        const id = Number(intent.split("-")[1]);
-        const index = todos.findIndex((t: Todo) => t.id === id)
-        if (index === -1) {
-          return json(
-            { message: `No todo with id ${id} found.` },
-            { status: 404 }
-          );
-        }
-        todos.splice(index, 1);
-        await saveTodos(todos);
-        // clearForm();
-      }
+    const values = Object.fromEntries(formData);
+    console.log('todos.tsx action: values =', values);
 
-      return null; // stays on current page
-      // return redirect(path); // redirects to another page
-    } catch (e) {
-      console.error("todos.tsx action:", e);
+    if (intent === "add") {
+      addTodo(formData);
+    } else if (intent?.startsWith("delete-")) {
+      deleteTodo(intent);
+    } else if (intent === "color") {
+      const color = formData.get("color") as string;
+      console.log('todos.tsx action: color =', color);
+      // sessionStorage.setItem('color', color);
     }
-  };
+
+    // return null; // stays on current page
+    // return redirect(path); // redirects to another page
+    return redirect('/todos'); // redirects to another page
+  } catch (e) {
+    console.error("todos.tsx action:", e);
+  }
+};
 
 /* function clearForm() {
   const input = document.querySelector("#text");
   console.log("clearForm: input =", input);
   input.value = "";
 } */
+
+async function addTodo(formData: FormData) {
+  await sleep(1); // to demonstrate "isSubmitting" state
+
+  const text = formData.get("text") as string;
+  const fieldErrors = {
+    text: validateText(text)
+  }
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return { formError: "Invalid data found.", fieldErrors };
+  }
+
+  const id = Date.now()
+  const todo = { id, text };
+  console.log('todos.tsx addTodo: todo =', todo);
+  let todos = await getTodos();
+  todos.push(todo);
+  await saveTodos(todos);
+}
+
+async function deleteTodo(intent: string) {
+  const id = Number(intent.split("-")[1]);
+  let todos = await getTodos();
+  const index = todos.findIndex((t: Todo) => t.id === id)
+  if (index === -1) {
+    return json(
+      { message: `No todo with id ${id} found.` },
+      { status: 404 }
+    );
+  }
+  todos.splice(index, 1);
+  await saveTodos(todos);
+  // clearForm();
+}
+
+function handleChange() {
+  const input = document.querySelector("#color-input") as HTMLInputElement
+  if (input) sessionStorage.setItem('color', input.value);
+}
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -95,7 +122,7 @@ export const links: LinksFunction = () => [
 // A source file can define a "loader" function and
 // not export a React component.
 // In that case it is only defining an API endpoint.
-export function loader({ request }) {
+export function loader({ request }: LoaderArgs) {
   // Could authenticate with something like
   // await requireUserId(request);
   // which could throw if the user is not authenticated.
@@ -119,8 +146,8 @@ function sleep(seconds: number) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
-function validateText(text: string) {
-  if (text.length < 3) {
+function validateText(text: string | undefined) {
+  if (!text || text.length < 3) {
     return "Todo text must be at least three characters."
   }
 }
@@ -144,7 +171,7 @@ export default function Todos() {
       <Heading>Todos</Heading>
       {/* Using Form instead of form enables submitting the form
           without a full page refresh. */}
-      <Form method="post" id="todo-form">
+      <Form method="post" id="todo-form" reloadDocument>
         <div className="add-area">
           {/* Note that the "id" prop is not needed, only "name". */}
           <input
@@ -179,6 +206,14 @@ export default function Todos() {
             </li>
           ))}
         </ol>
+      </Form>
+      <Form method="post" id="color-form" onChange={handleChange}>
+        <input
+          id="color-input"
+          name="color"
+          placeholder="enter your favorite color"
+        />
+        <button name="intent" value="color">Save Color</button>
       </Form>
     </div>
   );

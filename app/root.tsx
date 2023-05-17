@@ -1,4 +1,5 @@
-import { json, type LinksFunction } from "@remix-run/node";
+import { useContext } from 'react';
+import { json, type LinksFunction } from '@remix-run/node';
 import {
   Link,
   Links,
@@ -7,12 +8,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  UseCatch
+  useCatch
 } from "@remix-run/react";
 
-import MainNav from "~/components/MainNav";
-
-import styles from "~/styles/global.css";
+import AppContext from '~/AppContext';
+import MainNav from '~/components/MainNav';
+import styles from '~/styles/global.css';
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
@@ -72,6 +73,8 @@ export function CatchBoundary({ error }) {
 }
 
 export default function App() {
+  const context = useContext(AppContext);
+
   return (
     <html lang="en">
       <head>
@@ -86,6 +89,7 @@ export default function App() {
         <Links />
       </head>
       <body>
+        {/* <AppContext.Provider value={username, setUsername, password, setPassword}> */}
         <header>
           <MainNav />
         </header>
@@ -102,7 +106,8 @@ export default function App() {
         {/* This enables use of live reload so
             the browser updates when changes are saved. */}
         {process.env.NODE_ENV === "development" && <LiveReload />}
+        {/* </AppContext.Provider> */}
       </body>
-    </html>
+    </html >
   );
 }
