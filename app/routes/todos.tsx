@@ -29,6 +29,8 @@ type ActionData = {
   formError?: string
 }
 
+let editId = -1;
+
 // This function will only be present on the server and will run there.
 // It is triggered by all non-GET requests to this route.
 // Note how the front and back end are implemented in the same file.
@@ -39,16 +41,21 @@ export const action: ActionFunction = async ({ request }) => {
 
     const formData = await request.formData();
 
-    const intent = formData.get("intent") as string;
-    console.log('todos.tsx action: intent =', intent);
+    // This is one way to get data from formData.
+    // const intent = formData.get("intent") as string;
 
+    // This is another way to get data from formData.
     const values = Object.fromEntries(formData);
-    console.log('todos.tsx action: values =', values);
+    const { addText, intent, updateText } = values;
 
     if (intent === "add") {
-      await addTodo(formData);
+      await addTodo(addText);
     } else if (intent?.startsWith("delete-")) {
       await deleteTodo(intent);
+    } else if (intent?.startsWith("edit-")) {
+      await editTodo(intent);
+    } else if (intent?.startsWith("update-")) {
+      await updateTodo(intent, updateText);
     }
 
     return {}; // stays on current page
@@ -65,10 +72,9 @@ export const action: ActionFunction = async ({ request }) => {
   input.value = "";
 } */
 
-async function addTodo(formData: FormData) {
-  await sleep(1); // to demonstrate "isSubmitting" state
+async function addTodo(text: string) {
+  // await sleep(1); // to demonstrate "isSubmitting" state
 
-  const text = formData.get("text") as string;
   const fieldErrors = {
     text: validateText(text)
   }
@@ -84,7 +90,7 @@ async function addTodo(formData: FormData) {
 }
 
 async function deleteTodo(intent: string) {
-  const id = Number(intent.split("-")[1]);
+  const id = getId(intent);
   let todos = await getTodos();
   const index = todos.findIndex((t: Todo) => t.id === id)
   if (index === -1) {
@@ -96,6 +102,14 @@ async function deleteTodo(intent: string) {
   todos.splice(index, 1);
   await saveTodos(todos);
   // clearForm();
+}
+
+async function editTodo(intent: string) {
+  editId = getId(intent);
+}
+
+function getId(intent: string): number {
+  return Number(intent.split("-")[1]);
 }
 
 function handleChange() {
@@ -118,7 +132,7 @@ export const links: LinksFunction = () => [
 // not export a React component.
 // In that case it is only defining an API endpoint.
 export async function loader({ request }: LoaderArgs) {
-  await sleep(1); // to demonstrate slow fetching
+  // await sleep(1); // to demonstrate slow fetching
 
   // Could authenticate with something like
   // await requireUserId(request);
@@ -130,7 +144,8 @@ export async function loader({ request }: LoaderArgs) {
   // Can also return other content types including plain text.
   // return json(todos);
 
-  return getTodos();
+  const todos = await getTodos();
+  return { editId, todos };
   // TODO: Why doesn't this also work?
   // return json(getTodos())
 }
@@ -143,6 +158,21 @@ function sleep(seconds: number) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
+async function updateTodo(intent: string, text: string) {
+  const id = getId(intent);
+  let todos = await getTodos();
+  const index = todos.findIndex((t: Todo) => t.id === id)
+  if (index === -1) {
+    return json(
+      { message: `No todo with id ${id} found.` },
+      { status: 404 }
+    );
+  }
+  todos[index].text = text;
+  await saveTodos(todos);
+  editId = -1;
+}
+
 function validateText(text: string | undefined) {
   if (!text || text.length < 3) {
     return "Todo text must be at least three characters."
@@ -151,9 +181,12 @@ function validateText(text: string | undefined) {
 
 export default function Todos() {
   const [text, setText] = useState("");
+
+  const data = useLoaderData();
+  const { editId, todos } = useLoaderData();
+  todos.sort((t1: Todo, t2: Todo) => t1.text.localeCompare(t2.text));
+
   const actionData = useActionData<ActionData>();
-  const todos: Todo[] = useLoaderData();
-  todos.sort((t1, t2) => t1.text.localeCompare(t2.text));
 
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
@@ -162,7 +195,6 @@ export default function Todos() {
   const textError = fieldErrors?.text
 
   // Cannot use browser-only APIs because this code may run on the server.
-  // TODO: Add form validation logic.
   return (
     <div className="todos">
       <Heading>Todos</Heading>
@@ -172,7 +204,7 @@ export default function Todos() {
         <div className="add-area">
           {/* Note that the "id" prop is not needed, only "name". */}
           <input
-            name="text"
+            name="addText"
             onChange={e => setText(e.target.value)}
             placeholder="enter new todo here"
             value={text}
@@ -193,13 +225,27 @@ export default function Todos() {
             {formError && <div className="error">{formError}</div>}
           </div>
         </div>
+        <div>editId = {editId}</div>
         <ol>
           {todos.map(todo => (
             <li key={todo.id}>
-              {todo.text}
-              <button name="intent" value={"delete-" + todo.id}>
-                🗑
-              </button>
+              <div>
+                {todo.id === editId ?
+                  <input name="updateText" defaultValue={todo.text} /> :
+                  <div>{todo.text}</div>
+                }
+                {todo.id === editId ?
+                  <button name="intent" value={"update-" + todo.id}>
+                    Save
+                  </button> :
+                  <button name="intent" value={"edit-" + todo.id}>
+                    ✎
+                  </button>
+                }
+                <button name="intent" value={"delete-" + todo.id}>
+                  🗑
+                </button>
+              </div>
             </li>
           ))}
         </ol>

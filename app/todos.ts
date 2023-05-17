@@ -5,7 +5,7 @@ import type { Todo } from "~/types";
 // It will look for this file in the root project directory.
 const filePath = "todos.json";
 
-export async function getTodos() {
+export async function getTodos(): Promise<Todo[]> {
   const json = await fs.readFile(filePath, { encoding: "utf-8" });
   return JSON.parse(json) || [];
 }

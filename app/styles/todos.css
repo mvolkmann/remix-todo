@@ -1,3 +1,8 @@
+.todos li > div {
+  display: flex;
+  align-items: center;
+}
+
 .todos li button {
   background: transparent;
   border: none;
