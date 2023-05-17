@@ -117,7 +117,9 @@ export const links: LinksFunction = () => [
 // A source file can define a "loader" function and
 // not export a React component.
 // In that case it is only defining an API endpoint.
-export function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderArgs) {
+  await sleep(1); // to demonstrate slow fetching
+
   // Could authenticate with something like
   // await requireUserId(request);
   // which could throw if the user is not authenticated.
