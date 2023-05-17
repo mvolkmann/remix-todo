@@ -28,27 +28,11 @@ export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 export function ErrorBoundary({ error }) {
   console.log('root.tsx ErrorBoundary: error =', error);
   return (
-    <html lang="en">
-      <head>
-        <Meta />
-        <Links />
-        <title>An error occurred.</title>
-      </head>
-      <body>
-        <header>
-          <MainNav />
-        </header>
-        <main className="error">
-          <h1>An error occurred.</h1>
-          <p>{error?.message ?? "unknown"}</p>
-          <p>Back to <Link to="/">safety</Link>.</p>
-        </main>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
-      </body>
-    </html>
+    <main className="error">
+      <h1>An error occurred.</h1>
+      <p>{error?.message ?? "unknown"}</p>
+      <p>Back to <Link to="/">safety</Link>.</p>
+    </main>
   );
 }
 

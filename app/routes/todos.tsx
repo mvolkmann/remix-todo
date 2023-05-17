@@ -46,18 +46,14 @@ export const action: ActionFunction = async ({ request }) => {
     console.log('todos.tsx action: values =', values);
 
     if (intent === "add") {
-      addTodo(formData);
+      await addTodo(formData);
     } else if (intent?.startsWith("delete-")) {
-      deleteTodo(intent);
-    } else if (intent === "color") {
-      const color = formData.get("color") as string;
-      console.log('todos.tsx action: color =', color);
-      // sessionStorage.setItem('color', color);
+      await deleteTodo(intent);
     }
 
-    // return null; // stays on current page
+    return {}; // stays on current page
     // return redirect(path); // redirects to another page
-    return redirect('/todos'); // redirects to another page
+    // return redirect('/todos'); // redirects to another page
   } catch (e) {
     console.error("todos.tsx action:", e);
   }
@@ -82,7 +78,6 @@ async function addTodo(formData: FormData) {
 
   const id = Date.now()
   const todo = { id, text };
-  console.log('todos.tsx addTodo: todo =', todo);
   let todos = await getTodos();
   todos.push(todo);
   await saveTodos(todos);

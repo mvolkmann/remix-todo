@@ -6,7 +6,10 @@ export const meta: V2_MetaFunction = () => {
 };
 
 export default function Index() {
-  const color = sessionStorage?.getItem('color');
+  let color = 'unknown';
+  if (typeof sessionStorage !== 'undefined') {
+    color = sessionStorage.getItem('color') as string;
+  }
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
       <h1>Welcome to Remix!</h1>
