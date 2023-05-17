@@ -1,6 +1,7 @@
 body {
   font-family: sans-serif;
   padding-top: 0;
+  --button-font-size: 1.5rem;
 }
 
 button {
@@ -10,6 +11,21 @@ button {
 
 button:disabled {
   background-color: lightgray;
+}
+
+.button-blue {
+  color: blue;
+  font-size: var(--button-font-size);
+}
+
+.button-green {
+  color: green;
+  font-size: var(--button-font-size);
+}
+
+.button-red {
+  color: red;
+  font-size: var(--button-font-size);
 }
 
 .error {

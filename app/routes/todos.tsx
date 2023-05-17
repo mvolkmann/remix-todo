@@ -194,6 +194,18 @@ export default function Todos() {
   const { formError, fieldErrors } = actionData ?? {};
   const textError = fieldErrors?.text
 
+  function handleKeyUp(event: KeyboardEvent) {
+    if (event.key === "Enter") {
+      // Simulate pressing the green check mark.
+      const button = document.querySelector('.button-green') as HTMLButtonElement;
+      if (button) button.click();
+    } else if (event.key === "Escape") {
+      // Simulate pressing the red "X".
+      const button = document.querySelector('.button-red') as HTMLButtonElement;
+      if (button) button.click();
+    }
+  }
+
   // Cannot use browser-only APIs because this code may run on the server.
   return (
     <div className="todos">
@@ -225,20 +237,24 @@ export default function Todos() {
             {formError && <div className="error">{formError}</div>}
           </div>
         </div>
-        <div>editId = {editId}</div>
         <ol>
           {todos.map(todo => (
             <li key={todo.id}>
               <div>
                 {todo.id === editId ?
-                  <input name="updateText" defaultValue={todo.text} /> :
+                  <input name="updateText" defaultValue={todo.text} onKeyUp={handleKeyUp} /> :
                   <div>{todo.text}</div>
                 }
                 {todo.id === editId ?
-                  <button name="intent" value={"update-" + todo.id}>
-                    Save
-                  </button> :
-                  <button name="intent" value={"edit-" + todo.id}>
+                  <div>
+                    <button className="button-green" name="intent" value={"update-" + todo.id}>
+                      ✓
+                    </button>
+                    <button className="button-red" name="intent" value={"edit--1"}>
+                      ✖
+                    </button>
+                  </div> :
+                  <button className="button-blue" name="intent" value={"edit-" + todo.id}>
                     ✎
                   </button>
                 }
