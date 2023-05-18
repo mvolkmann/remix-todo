@@ -37,6 +37,7 @@ export default function TodoRow({ todo, editing, setIntent, toggleDone }: Props)
       />
       {editing ?
         <input
+          autoFocus
           name="updateText"
           defaultValue={todo.text}
           onKeyUp={handleKeyUp}
