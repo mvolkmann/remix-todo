@@ -17,11 +17,9 @@ import {
   useNavigation
 } from "@remix-run/react";
 
-// import TodoForm, { links as todoFormLinks } from "~/components/TodoForm";
 import Heading, { links as headingLinks } from "~/components/Heading";
 
 import styles from "~/styles/todos.css";
-// import { getTodos, saveTodos } from "~/todos";
 
 import type { Todo } from "~/types";
 
@@ -59,42 +57,36 @@ export const action: ActionFunction = async ({ request }) => {
 
     // This is another way to get data from formData.
     const values = Object.fromEntries(formData) as MyFormData;
-    console.log('todos.tsx action: values =', values);
     // const { addText, intent, updateDone, updateText } = values;
 
     if (intent === "add") {
       await addTodo(addText);
     } else if (intent?.startsWith("delete-")) {
-      await deleteTodo(intent);
+      await deleteSelectedTodo(intent);
     } else if (intent?.startsWith("edit-")) {
       await editTodo(intent);
     } else if (intent?.startsWith("update-")) {
       const id = getId(intent);
-      await updateTodoText(id, updateText);
+      await updateTodo({ id, text: updateText });
+      editId = -1;
     }
 
+    // Update done flags on each todo.
+    // TODO: Is there are way to know that only one of them changed.
     for (const key of Object.keys(values)) {
       if (key.startsWith('done-')) {
         const id = getId(key);
         const done = values[key] === 'on';
-        console.log('todos.tsx action: id =', id, 'done =', done);
-        updateTodoDone(id, done)
+        await updateTodo({ id, done });
       }
     }
 
     return {}; // stays on current page
-    // return redirect(path); // redirects to another page
     // return redirect('/todos'); // redirects to another page
   } catch (e) {
     console.error("todos.tsx action:", e);
   }
 };
-
-/* function clearForm() {
-  const input = document.querySelector("#text");
-  console.log("clearForm: input =", input);
-  input.value = "";
-} */
 
 async function addTodo(text: string) {
   // await sleep(1); // to demonstrate "isSubmitting" state
@@ -106,31 +98,11 @@ async function addTodo(text: string) {
     return { formError: "Invalid data found.", fieldErrors };
   }
 
-  /*
-  const id = Date.now()
-  const todo: Todo = { done: false, id, text };
-  let todos = await getTodos();
-  todos.push(todo);
-  await saveTodos(todos);
-  */
   await createTodo({ text });
 }
 
-async function deleteTodo(intent: string) {
+async function deleteSelectedTodo(intent: string) {
   const id = getId(intent);
-  /*
-  let todos = await getTodos();
-  const index = todos.findIndex((t: Todo) => t.id === id)
-  if (index === -1) {
-    return json(
-      { message: `No todo with id ${id} found.` },
-      { status: 404 }
-    );
-  }
-  todos.splice(index, 1);
-  await saveTodos(todos);
-  // clearForm();
-  */
   await deleteTodo(id);
 }
 
@@ -176,8 +148,6 @@ export async function loader({ request }: LoaderArgs) {
 
   const todos = await getTodos();
   return { editId, todos };
-  // TODO: Why doesn't this also work?
-  // return json(getTodos())
 }
 
 export const meta: V2_MetaFunction = () => {
@@ -186,37 +156,6 @@ export const meta: V2_MetaFunction = () => {
 
 function sleep(seconds: number) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
-}
-
-async function updateTodoDone(id: number, done: boolean) {
-  let todos = await getTodos();
-  const index = todos.findIndex((t: Todo) => t.id === id)
-  if (index === -1) {
-    return json(
-      { message: `No todo with id ${id} found.` },
-      { status: 404 }
-    );
-  }
-  todos[index].done = done;
-  console.log('todos.tsx updateTodoDone: todos =', todos);
-  await saveTodos(todos);
-}
-
-async function updateTodoText(id: number, text: string) {
-  /*
-  let todos = await getTodos();
-  const index = todos.findIndex((t: Todo) => t.id === id)
-  if (index === -1) {
-    return json(
-      { message: `No todo with id ${id} found.` },
-      { status: 404 }
-    );
-  }
-  todos[index].text = text;
-  await saveTodos(todos);
-  */
-  await updateTodo({ id, text });
-  editId = -1;
 }
 
 function validateText(text: string | undefined) {
@@ -241,15 +180,7 @@ export default function Todos() {
 
   function clickButton(selector: string) {
     const button = document.querySelector(selector) as HTMLButtonElement;
-    console.log('todos.tsx clickButton: button =', button);
     if (button) button.click();
-  }
-
-  function handleCheckbox(event: ChangeEvent<HTMLInputElement>) {
-    const done = event.target?.checked;
-    console.log('todos.tsx handleCheckbox: done =', done);
-    const form = document.querySelector('#todo-form') as HTMLFormElement;
-    form.submit();
   }
 
   function handleKeyUp(event: KeyboardEvent) {
@@ -258,6 +189,11 @@ export default function Todos() {
     } else if (event.key === "Escape") {
       clickButton('.button-cancel');
     }
+  }
+
+  function submitForm(event: ChangeEvent<HTMLInputElement>) {
+    const form = document.querySelector('#todo-form') as HTMLFormElement;
+    form.submit();
   }
 
   // Cannot use browser-only APIs because this code may run on the server.
@@ -299,7 +235,7 @@ export default function Todos() {
                 name={'done-' + todo.id}
                 type="checkbox"
                 checked={todo.done}
-                onChange={handleCheckbox}
+                onChange={submitForm}
               />
               {todo.id === editId ?
                 <input
