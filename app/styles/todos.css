@@ -26,6 +26,11 @@
   align-items: center;
 }
 
+.todos .done-true {
+  color: gray;
+  text-decoration: line-through;
+}
+
 .todos li button {
   background: transparent;
   border: none;
