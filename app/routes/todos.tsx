@@ -1,13 +1,11 @@
 import { createTodo, deleteTodo, getTodos, updateTodo } from '~/utils/todos';
 
-import { ChangeEvent, useState } from 'react';
+import { useState } from 'react';
 
 import {
   type ActionFunction,
   type LinksFunction,
   type LoaderArgs,
-  json,
-  redirect
 } from "@remix-run/node";
 
 import {
@@ -31,13 +29,6 @@ type ActionData = {
   formError?: string
 }
 
-type MyFormData = {
-  addText: string,
-  intent: string,
-  updateDone: boolean,
-  updateText: string
-}
-
 let editId = -1;
 
 // This function will only be present on the server and will run there.
@@ -56,7 +47,7 @@ export const action: ActionFunction = async ({ request }) => {
     const updateText = formData.get('updateText') as string;
 
     // This is another way to get data from formData.
-    const values = Object.fromEntries(formData) as MyFormData;
+    const values = Object.fromEntries(formData);
     // const { addText, intent, updateDone, updateText } = values;
 
     if (intent === "add") {
@@ -67,9 +58,10 @@ export const action: ActionFunction = async ({ request }) => {
       await editTodo(intent);
     } else if (intent?.startsWith("update-")) {
       const id = getId(intent);
-      await updateTodo({ id, text: updateText });
+      const todo: Todo = { id, text: updateText }
+      await updateTodo(todo);
       editId = -1;
-    }
+    };
 
     // Update done flags on each todo.
     // TODO: Is there are way to know that only one of them changed.
@@ -103,6 +95,7 @@ async function addTodo(text: string) {
 
 async function deleteSelectedTodo(intent: string) {
   const id = getId(intent);
+  console.log('todos.tsx deleteSelectedTodo: id =', id);
   await deleteTodo(id);
 }
 
@@ -191,7 +184,7 @@ export default function Todos() {
     }
   }
 
-  function submitForm(event: ChangeEvent<HTMLInputElement>) {
+  function submitForm() {
     const form = document.querySelector('#todo-form') as HTMLFormElement;
     form.submit();
   }
