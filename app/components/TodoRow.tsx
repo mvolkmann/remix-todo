@@ -1,7 +1,8 @@
 import { type ChangeEvent } from 'react';
-import type { LinksFunction } from "@remix-run/node";
-import type { Todo } from "~/types";
-import styles from "./TodoRow.css";
+import type { LinksFunction } from '@remix-run/node';
+import type { Todo } from '~/types';
+import styles from './TodoRow.css';
+import { clickButton } from '~/utils/DOMUtil';
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
@@ -13,11 +14,6 @@ type Props = {
 };
 
 export default function TodoRow({ todo, editing, setIntent, toggleDone }: Props) {
-
-  function clickButton(selector: string) {
-    const button = document.querySelector(selector) as HTMLButtonElement;
-    if (button) button.click();
-  }
 
   function handleKeyUp(event: KeyboardEvent) {
     if (event.key === "Enter") {

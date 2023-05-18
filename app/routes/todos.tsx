@@ -17,6 +17,7 @@ import {
 
 import Heading, { links as headingLinks } from "~/components/Heading";
 import TodoRow, { links as todoRowLinks } from "~/components/TodoRow";
+import { setInputValue, submitForm } from '~/utils/DOMUtil';
 
 import styles from "~/styles/todos.css";
 
@@ -160,20 +161,9 @@ export default function Todos() {
   const { formError, fieldErrors } = actionData ?? {};
   const textError = fieldErrors?.text
 
-  function setInputValue(selector: string, value: any) {
-    const input = document.querySelector(selector) as HTMLInputElement;
-    input.value = String(value);
-
-  }
-
   function setIntent(intent) {
     setInputValue("#intent", intent);
     submitForm();
-  }
-
-  function submitForm() {
-    const form = document.querySelector('#todo-form') as HTMLFormElement;
-    form.submit();
   }
 
   function toggleDone(event) {
