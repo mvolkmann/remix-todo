@@ -21,14 +21,16 @@
   gap: 1rem;
 }
 
-.todos li {
-  margin-top: 0.5rem;
+.todos .buttons {
+  display: inline-flex;
+  align-items: center;
 }
 
 .todos li button {
   background: transparent;
   border: none;
   margin-left: 0.5rem;
+  padding: 0;
 }
 
 .todos li input {

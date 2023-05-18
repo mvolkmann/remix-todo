@@ -43,6 +43,8 @@ export const action: ActionFunction = async ({ request }) => {
 
     // This is one way to get data from formData.
     const addText = formData.get('addText') as string;
+    const doneId = Number(formData.get('doneId'));
+    const doneValue = formData.get('doneValue') === 'true';
     const intent = formData.get('intent') as string;
     const updateText = formData.get('updateText') as string;
 
@@ -63,14 +65,9 @@ export const action: ActionFunction = async ({ request }) => {
       editId = -1;
     };
 
-    // Update done flags on each todo.
-    // TODO: Is there are way to know that only one of them changed.
-    for (const key of Object.keys(values)) {
-      if (key.startsWith('done-')) {
-        const id = getId(key);
-        const done = values[key] === 'on';
-        await updateTodo({ id, done });
-      }
+    if (doneId) {
+      const todo: Todo = { id: doneId, done: doneValue };
+      await updateTodo(todo);
     }
 
     return {}; // stays on current page
@@ -118,14 +115,6 @@ export const links: LinksFunction = () => [
   // ...todoFormLinks(),
 ];
 
-// This function will only be present on the server and will run there.
-// It is triggered by all GET requests to this route.
-// Because it runs on the server, there are never CORS issues.
-// This code can communicate directly with a database.
-// This function can be async.
-// A source file can define a "loader" function and
-// not export a React component.
-// In that case it is only defining an API endpoint.
 export async function loader({ request }: LoaderArgs) {
   // await sleep(1); // to demonstrate slow fetching
 
@@ -184,7 +173,25 @@ export default function Todos() {
     }
   }
 
-  function submitForm() {
+  function setInputValue(selector: string, value: any) {
+    const input = document.querySelector(selector) as HTMLInputElement;
+    input.value = String(value);
+
+  }
+
+  function toggleDone(event) {
+    // Determine the id and done state of the todo that was toggled.
+    const checkbox = event.target;
+    // checkbox.name will be "done-" followed by the id of the todo.
+    const id = getId(checkbox.name); // number
+    const done = checkbox.checked; // boolean
+
+    // Update the values of hidden inputs so they can be sent in the form post.
+    // This seems like a hacky approach.
+    setInputValue('#doneId', id);
+    setInputValue('#doneValue', done);
+
+    // Submit the form.
     const form = document.querySelector('#todo-form') as HTMLFormElement;
     form.submit();
   }
@@ -228,7 +235,7 @@ export default function Todos() {
                 name={'done-' + todo.id}
                 type="checkbox"
                 checked={todo.done}
-                onChange={submitForm}
+                onChange={toggleDone}
               />
               {todo.id === editId ?
                 <input
@@ -238,37 +245,41 @@ export default function Todos() {
                 /> :
                 <span className={'done-' + todo.done}>{todo.text}</span>
               }
-              {todo.id === editId ?
-                <span>
+              <div className="buttons">
+                {todo.id === editId ?
+                  <>
+                    <button
+                      className="button-ok"
+                      name="intent"
+                      value={"update-" + todo.id}
+                    >
+                      ✓
+                    </button>
+                    <button
+                      className="button-cancel"
+                      name="intent"
+                      value={"edit--1"}
+                    >
+                      ✖
+                    </button>
+                  </> :
                   <button
-                    className="button-ok"
+                    className="button-edit"
                     name="intent"
-                    value={"update-" + todo.id}
+                    value={"edit-" + todo.id}
                   >
-                    ✓
+                    ✎
                   </button>
-                  <button
-                    className="button-cancel"
-                    name="intent"
-                    value={"edit--1"}
-                  >
-                    ✖
-                  </button>
-                </span> :
-                <button
-                  className="button-edit"
-                  name="intent"
-                  value={"edit-" + todo.id}
-                >
-                  ✎
+                }
+                <button name="intent" value={"delete-" + todo.id}>
+                  🗑
                 </button>
-              }
-              <button name="intent" value={"delete-" + todo.id}>
-                🗑
-              </button>
+              </div>
             </li>
           ))}
         </ul>
+        <input type="hidden" id="doneId" name="doneId" />
+        <input type="hidden" id="doneValue" name="doneValue" />
       </Form >
       <Form method="post" id="color-form" onChange={handleChange}>
         <input
