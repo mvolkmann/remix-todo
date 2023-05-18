@@ -16,6 +16,7 @@ import {
 } from "@remix-run/react";
 
 import Heading, { links as headingLinks } from "~/components/Heading";
+import TodoRow, { links as todoRowLinks } from "~/components/TodoRow";
 
 import styles from "~/styles/todos.css";
 
@@ -91,9 +92,7 @@ async function addTodo(text: string) {
 }
 
 async function deleteSelectedTodo(intent: string) {
-  const id = getId(intent);
-  console.log('todos.tsx deleteSelectedTodo: id =', id);
-  await deleteTodo(id);
+  await deleteTodo(getId(intent));
 }
 
 async function editTodo(intent: string) {
@@ -112,6 +111,7 @@ function handleChange() {
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
   ...headingLinks(),
+  ...todoRowLinks()
   // ...todoFormLinks(),
 ];
 
@@ -160,23 +160,20 @@ export default function Todos() {
   const { formError, fieldErrors } = actionData ?? {};
   const textError = fieldErrors?.text
 
-  function clickButton(selector: string) {
-    const button = document.querySelector(selector) as HTMLButtonElement;
-    if (button) button.click();
-  }
-
-  function handleKeyUp(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      clickButton('.button-ok');
-    } else if (event.key === "Escape") {
-      clickButton('.button-cancel');
-    }
-  }
-
   function setInputValue(selector: string, value: any) {
     const input = document.querySelector(selector) as HTMLInputElement;
     input.value = String(value);
 
+  }
+
+  function setIntent(intent) {
+    setInputValue("#intent", intent);
+    submitForm();
+  }
+
+  function submitForm() {
+    const form = document.querySelector('#todo-form') as HTMLFormElement;
+    form.submit();
   }
 
   function toggleDone(event) {
@@ -191,9 +188,7 @@ export default function Todos() {
     setInputValue('#doneId', id);
     setInputValue('#doneValue', done);
 
-    // Submit the form.
-    const form = document.querySelector('#todo-form') as HTMLFormElement;
-    form.submit();
+    submitForm();
   }
 
   const uncompleted = todos.filter((t: Todo) => !t.done).length;
@@ -204,8 +199,6 @@ export default function Todos() {
     <div className="todos">
       <Heading>Todos</Heading>
       <div>{status}</div>
-      {/* Using Form instead of form enables submitting the form
-          without a full page refresh. */}
       <Form method="post" id="todo-form" reloadDocument>
         <div className="add-area">
           <div className="row">
@@ -234,56 +227,18 @@ export default function Todos() {
         </div>
         <ul>
           {todos.map((todo: Todo) => (
-            <li key={todo.id}>
-              <input
-                name={'done-' + todo.id}
-                type="checkbox"
-                checked={todo.done}
-                onChange={toggleDone}
-              />
-              {todo.id === editId ?
-                <input
-                  name="updateText"
-                  defaultValue={todo.text}
-                  onKeyUp={handleKeyUp}
-                /> :
-                <span className={'done-' + todo.done}>{todo.text}</span>
-              }
-              <div className="buttons">
-                {todo.id === editId ?
-                  <>
-                    <button
-                      className="button-ok"
-                      name="intent"
-                      value={"update-" + todo.id}
-                    >
-                      ✓
-                    </button>
-                    <button
-                      className="button-cancel"
-                      name="intent"
-                      value={"edit--1"}
-                    >
-                      ✖
-                    </button>
-                  </> :
-                  <button
-                    className="button-edit"
-                    name="intent"
-                    value={"edit-" + todo.id}
-                  >
-                    ✎
-                  </button>
-                }
-                <button name="intent" value={"delete-" + todo.id}>
-                  🗑
-                </button>
-              </div>
-            </li>
+            <TodoRow
+              key={todo.id}
+              todo={todo}
+              editing={todo.id === editId}
+              setIntent={setIntent}
+              toggleDone={toggleDone}
+            />
           ))}
         </ul>
         <input type="hidden" id="doneId" name="doneId" />
         <input type="hidden" id="doneValue" name="doneValue" />
+        <input type="hidden" id="intent" name="intent" />
       </Form >
       <Form method="post" id="color-form" onChange={handleChange}>
         <input

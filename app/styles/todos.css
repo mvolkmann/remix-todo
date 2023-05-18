@@ -21,32 +21,7 @@
   gap: 1rem;
 }
 
-.todos .buttons {
-  display: inline-flex;
-  align-items: center;
-}
-
 .todos #color-input {
-  margin-right: 1rem;
-}
-
-.todos .done-true {
-  color: gray;
-  text-decoration: line-through;
-}
-
-.todos li button {
-  background: transparent;
-  border: none;
-  margin-left: 0.5rem;
-  padding: 0;
-}
-
-.todos li input {
-  display: inline-block;
-}
-
-.todos li input[type=checkbox] {
   margin-right: 1rem;
 }
 

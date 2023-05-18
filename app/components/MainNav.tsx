@@ -22,7 +22,7 @@ export const action: ActionFunction = async ({ request }) => {
     }
     return null; // stays on current page
   } catch (e) {
-    console.error("todos.tsx action:", e);
+    console.error("MainNav.tsx action:", e);
   }
 };
 

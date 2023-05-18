@@ -1,3 +1,6 @@
+/*
+This code is no longer used now that we are using Prisma and a SQLite database.
+
 import fs from "fs/promises";
 import type { Todo } from "~/types";
 
@@ -13,3 +16,4 @@ export async function getTodos(): Promise<Todo[]> {
 export function saveTodos(todos: Todo[]) {
   return fs.writeFile(filePath, JSON.stringify(todos));
 }
+*/

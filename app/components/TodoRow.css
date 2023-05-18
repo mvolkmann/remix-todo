@@ -1,0 +1,24 @@
+.todo-row button {
+  background: transparent;
+  border: none;
+  margin-left: 0.5rem;
+  padding: 0;
+}
+
+.todo-row .buttons {
+  display: inline-flex;
+  align-items: center;
+}
+
+.todo-row .done-true {
+  color: gray;
+  text-decoration: line-through;
+}
+
+.todo-row input {
+  display: inline-block;
+}
+
+.todo-row input[type=checkbox] {
+  margin-right: 1rem;
+}
