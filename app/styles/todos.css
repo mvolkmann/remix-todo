@@ -26,6 +26,10 @@
   align-items: center;
 }
 
+.todos #color-input {
+  margin-right: 1rem;
+}
+
 .todos .done-true {
   color: gray;
   text-decoration: line-through;

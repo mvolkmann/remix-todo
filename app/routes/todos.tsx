@@ -196,10 +196,14 @@ export default function Todos() {
     form.submit();
   }
 
+  const uncompleted = todos.filter((t: Todo) => !t.done).length;
+  const status = `${uncompleted} of ${todos.length} remaining`;
+
   // Cannot use browser-only APIs because this code may run on the server.
   return (
     <div className="todos">
       <Heading>Todos</Heading>
+      <div>{status}</div>
       {/* Using Form instead of form enables submitting the form
           without a full page refresh. */}
       <Form method="post" id="todo-form" reloadDocument>
