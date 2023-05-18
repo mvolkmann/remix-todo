@@ -1,3 +1,5 @@
+import { createTodo, deleteTodo, getTodos, updateTodo } from '~/utils/todos';
+
 import { ChangeEvent, useState } from 'react';
 
 import {
@@ -19,7 +21,7 @@ import {
 import Heading, { links as headingLinks } from "~/components/Heading";
 
 import styles from "~/styles/todos.css";
-import { getTodos, saveTodos } from "~/todos";
+// import { getTodos, saveTodos } from "~/todos";
 
 import type { Todo } from "~/types";
 
@@ -104,15 +106,19 @@ async function addTodo(text: string) {
     return { formError: "Invalid data found.", fieldErrors };
   }
 
+  /*
   const id = Date.now()
   const todo: Todo = { done: false, id, text };
   let todos = await getTodos();
   todos.push(todo);
   await saveTodos(todos);
+  */
+  await createTodo({ text });
 }
 
 async function deleteTodo(intent: string) {
   const id = getId(intent);
+  /*
   let todos = await getTodos();
   const index = todos.findIndex((t: Todo) => t.id === id)
   if (index === -1) {
@@ -124,6 +130,8 @@ async function deleteTodo(intent: string) {
   todos.splice(index, 1);
   await saveTodos(todos);
   // clearForm();
+  */
+  await deleteTodo(id);
 }
 
 async function editTodo(intent: string) {
@@ -195,6 +203,7 @@ async function updateTodoDone(id: number, done: boolean) {
 }
 
 async function updateTodoText(id: number, text: string) {
+  /*
   let todos = await getTodos();
   const index = todos.findIndex((t: Todo) => t.id === id)
   if (index === -1) {
@@ -205,6 +214,8 @@ async function updateTodoText(id: number, text: string) {
   }
   todos[index].text = text;
   await saveTodos(todos);
+  */
+  await updateTodo({ id, text });
   editId = -1;
 }
 
