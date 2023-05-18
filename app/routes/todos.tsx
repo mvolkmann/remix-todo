@@ -247,50 +247,53 @@ export default function Todos() {
 
           {formError && <div className="error">{formError}</div>}
         </div>
-        <ol>
+        <ul>
           {todos.map((todo: Todo) => (
             <li key={todo.id}>
-              <div>
-                {todo.id === editId ?
-                  <input
-                    name="updateText"
-                    defaultValue={todo.text}
-                    onKeyUp={handleKeyUp}
-                  /> :
-                  <div>{todo.text}</div>
-                }
-                {todo.id === editId ?
-                  <div>
-                    <button
-                      className="button-green"
-                      name="intent"
-                      value={"update-" + todo.id}
-                    >
-                      ✓
-                    </button>
-                    <button
-                      className="button-red"
-                      name="intent"
-                      value={"edit--1"}
-                    >
-                      ✖
-                    </button>
-                  </div> :
+              <input
+                name={'done-' + todo.id}
+                type="checkbox"
+                checked={todo.done}
+              />
+              {todo.id === editId ?
+                <input
+                  name="updateText"
+                  defaultValue={todo.text}
+                  onKeyUp={handleKeyUp}
+                /> :
+                <span className={'done-' + todo.done}>{todo.text}</span>
+              }
+              {todo.id === editId ?
+                <span>
                   <button
-                    className="button-blue"
+                    className="button-green"
                     name="intent"
-                    value={"edit-" + todo.id}
+                    value={"update-" + todo.id}
                   >
-                    ✎
+                    ✓
                   </button>
-                }
-                <button name="intent" value={"delete-" + todo.id}>
-                  🗑
+                  <button
+                    className="button-red"
+                    name="intent"
+                    value={"edit--1"}
+                  >
+                    ✖
+                  </button>
+                </span> :
+                <button
+                  className="button-blue"
+                  name="intent"
+                  value={"edit-" + todo.id}
+                >
+                  ✎
                 </button>
-              </div>
+              }
+              <button name="intent" value={"delete-" + todo.id}>
+                🗑
+              </button>
             </li>
           ))}
-        </ol>
+        </ul>
       </Form >
       <Form method="post" id="color-form" onChange={handleChange}>
         <input

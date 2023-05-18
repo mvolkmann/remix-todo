@@ -92,14 +92,14 @@ export default function Login() {
       <Form method="post" id="login-form">
         <h1>Login</h1>
         <div>
-          <label>Username</label>
+          <label htmlFor="username">Username</label>
           <input name="username" />
           {usernameError && (
             <div className="error">{usernameError}</div>
           )}
         </div>
         <div>
-          <label>Password</label>
+          <label htmlFor="password">Password</label>
           <input name="password" type="password" />
           {passwordError && (
             <div className="error">{passwordError}</div>

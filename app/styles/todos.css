@@ -1,14 +1,3 @@
-.todos li > div {
-  display: flex;
-  align-items: center;
-}
-
-.todos li button {
-  background: transparent;
-  border: none;
-  margin-left: 0.5rem;
-}
-
 .todos .add-area {
   display: flex;
   flex-direction: column;
@@ -30,4 +19,28 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.todos li {
+  margin-top: 0.5rem;
+}
+
+.todos li button {
+  background: transparent;
+  border: none;
+  margin-left: 0.5rem;
+}
+
+.todos li input {
+  display: inline-block;
+}
+
+.todos li input[type=checkbox] {
+  margin-right: 1rem;
+}
+
+.todos ul {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
 }
