@@ -1,4 +1,5 @@
-import { KeyboardEventHandler, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
+
 import {
   type ActionFunction,
   type LinksFunction,
@@ -6,6 +7,7 @@ import {
   json,
   redirect
 } from "@remix-run/node";
+
 import {
   Form,
   useActionData,
@@ -32,6 +34,7 @@ type ActionData = {
 type MyFormData = {
   addText: string,
   intent: string,
+  updateDone: boolean,
   updateText: string
 }
 
@@ -48,11 +51,14 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData();
 
     // This is one way to get data from formData.
-    // const intent = formData.get("intent") as string;
+    const addText = formData.get('addText') as string;
+    const intent = formData.get('intent') as string;
+    const updateText = formData.get('updateText') as string;
 
     // This is another way to get data from formData.
     const values = Object.fromEntries(formData) as MyFormData;
-    const { addText, intent, updateText } = values;
+    console.log('todos.tsx action: values =', values);
+    // const { addText, intent, updateDone, updateText } = values;
 
     if (intent === "add") {
       await addTodo(addText);
@@ -61,7 +67,17 @@ export const action: ActionFunction = async ({ request }) => {
     } else if (intent?.startsWith("edit-")) {
       await editTodo(intent);
     } else if (intent?.startsWith("update-")) {
-      await updateTodo(intent, updateText);
+      const id = getId(intent);
+      await updateTodoText(id, updateText);
+    }
+
+    for (const key of Object.keys(values)) {
+      if (key.startsWith('done-')) {
+        const id = getId(key);
+        const done = values[key] === 'on';
+        console.log('todos.tsx action: id =', id, 'done =', done);
+        updateTodoDone(id, done)
+      }
     }
 
     return {}; // stays on current page
@@ -164,8 +180,21 @@ function sleep(seconds: number) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
-async function updateTodo(intent: string, text: string) {
-  const id = getId(intent);
+async function updateTodoDone(id: number, done: boolean) {
+  let todos = await getTodos();
+  const index = todos.findIndex((t: Todo) => t.id === id)
+  if (index === -1) {
+    return json(
+      { message: `No todo with id ${id} found.` },
+      { status: 404 }
+    );
+  }
+  todos[index].done = done;
+  console.log('todos.tsx updateTodoDone: todos =', todos);
+  await saveTodos(todos);
+}
+
+async function updateTodoText(id: number, text: string) {
   let todos = await getTodos();
   const index = todos.findIndex((t: Todo) => t.id === id)
   if (index === -1) {
@@ -199,19 +228,24 @@ export default function Todos() {
   const { formError, fieldErrors } = actionData ?? {};
   const textError = fieldErrors?.text
 
-  function getButton(selector: string): HTMLButtonElement {
-    return document.querySelector(selector) as HTMLButtonElement;
+  function clickButton(selector: string) {
+    const button = document.querySelector(selector) as HTMLButtonElement;
+    console.log('todos.tsx clickButton: button =', button);
+    if (button) button.click();
+  }
+
+  function handleCheckbox(event: ChangeEvent<HTMLInputElement>) {
+    const done = event.target?.checked;
+    console.log('todos.tsx handleCheckbox: done =', done);
+    const form = document.querySelector('#todo-form') as HTMLFormElement;
+    form.submit();
   }
 
   function handleKeyUp(event: KeyboardEvent) {
     if (event.key === "Enter") {
-      // Simulate pressing the green check mark.
-      const button = getButton('.button-green');
-      if (button) button.click();
+      clickButton('.button-ok');
     } else if (event.key === "Escape") {
-      // Simulate pressing the red "X".
-      const button = getButton('.button-red');
-      if (button) button.click();
+      clickButton('.button-cancel');
     }
   }
 
@@ -254,6 +288,7 @@ export default function Todos() {
                 name={'done-' + todo.id}
                 type="checkbox"
                 checked={todo.done}
+                onChange={handleCheckbox}
               />
               {todo.id === editId ?
                 <input
@@ -266,14 +301,14 @@ export default function Todos() {
               {todo.id === editId ?
                 <span>
                   <button
-                    className="button-green"
+                    className="button-ok"
                     name="intent"
                     value={"update-" + todo.id}
                   >
                     ✓
                   </button>
                   <button
-                    className="button-red"
+                    className="button-cancel"
                     name="intent"
                     value={"edit--1"}
                   >
@@ -281,7 +316,7 @@ export default function Todos() {
                   </button>
                 </span> :
                 <button
-                  className="button-blue"
+                  className="button-edit"
                   name="intent"
                   value={"edit-" + todo.id}
                 >

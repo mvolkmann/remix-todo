@@ -13,18 +13,18 @@ button:disabled {
   background-color: lightgray;
 }
 
-.button-blue {
+.button-cancel {
+  color: red;
+  font-size: var(--button-font-size);
+}
+
+.button-edit {
   color: blue;
   font-size: var(--button-font-size);
 }
 
-.button-green {
+.button-ok {
   color: green;
-  font-size: var(--button-font-size);
-}
-
-.button-red {
-  color: red;
   font-size: var(--button-font-size);
 }
 
