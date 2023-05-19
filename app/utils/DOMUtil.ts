@@ -8,7 +8,7 @@ export function setInputValue(selector: string, value: any) {
   if (input) input.value = String(value);
 }
 
-function sleep(seconds: number) {
+export function sleep(seconds: number) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
