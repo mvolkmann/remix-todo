@@ -1,10 +1,10 @@
-import { type ChangeEvent, type KeyboardEventHandler } from 'react';
-import { type LinksFunction } from '@remix-run/node';
-import { type Todo } from '~/types';
+import {type ChangeEvent, type KeyboardEventHandler} from 'react';
+import {type LinksFunction} from '@remix-run/node';
+import {type Todo} from '~/types';
 import styles from './TodoRow.css';
-import { clickButton } from '~/utils/DOMUtil';
+import {clickButton} from '~/utils/DOMUtil';
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
+export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
 
 type Props = {
   todo: Todo;
@@ -13,11 +13,10 @@ type Props = {
   toggleDone: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
-export default function TodoRow({ todo, editing, setIntent, toggleDone }: Props) {
-
+export default function TodoRow({todo, editing, setIntent, toggleDone}: Props) {
   const buttons = () => (
     <div className="buttons">
-      {editing ?
+      {editing ? (
         <>
           <button
             className="button-ok"
@@ -31,27 +30,28 @@ export default function TodoRow({ todo, editing, setIntent, toggleDone }: Props)
           >
             ✖
           </button>
-        </> :
+        </>
+      ) : (
         <button
           className="button-edit"
           onClick={() => setIntent('edit-' + todo.id)}
         >
           ✎
         </button>
-      }
-      <button name="intent" value={"delete-" + todo.id}>
+      )}
+      <button name="intent" value={'delete-' + todo.id}>
         🗑
       </button>
     </div>
   );
 
-  const handleKeyUp: KeyboardEventHandler<HTMLInputElement> = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyUp: KeyboardEventHandler<HTMLInputElement> = event => {
+    if (event.key === 'Enter') {
       clickButton('.button-ok');
-    } else if (event.key === "Escape") {
+    } else if (event.key === 'Escape') {
       clickButton('.button-cancel');
     }
-  }
+  };
 
   return (
     <li className="todo-row" key={todo.id}>
@@ -61,15 +61,16 @@ export default function TodoRow({ todo, editing, setIntent, toggleDone }: Props)
         checked={todo.done}
         onChange={toggleDone}
       />
-      {editing ?
+      {editing ? (
         <input
           autoFocus
           name="updateText"
           defaultValue={todo.text}
           onKeyUp={handleKeyUp}
-        /> :
+        />
+      ) : (
         <span className={'done-' + todo.done}>{todo.text}</span>
-      }
+      )}
       {buttons()}
     </li>
   );

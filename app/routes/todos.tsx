@@ -1,41 +1,38 @@
-import { createTodo, deleteTodo, getTodos, updateTodo } from '~/utils/todos';
+import {createTodo, deleteTodo, getTodos, updateTodo} from '~/utils/todos';
 
-import { type ChangeEvent, useState } from 'react';
+import {type ChangeEvent, useState} from 'react';
 
-import {
-  type ActionFunction,
-  type LinksFunction,
-} from '@remix-run/node';
+import {type ActionFunction, type LinksFunction} from '@remix-run/node';
 
 import {
   Form,
   useActionData,
   useLoaderData,
   useNavigation
-} from "@remix-run/react";
+} from '@remix-run/react';
 
-import Heading, { links as headingLinks } from "~/components/Heading";
-import TodoRow, { links as todoRowLinks } from "~/components/TodoRow";
-import { setInputValue, submitForm } from '~/utils/DOMUtil';
+import Heading, {links as headingLinks} from '~/components/Heading';
+import TodoRow, {links as todoRowLinks} from '~/components/TodoRow';
+import {setInputValue, submitForm} from '~/utils/DOMUtil';
 
-import styles from "~/styles/todos.css";
+import styles from '~/styles/todos.css';
 
-import type { Todo } from "~/types";
+import type {Todo} from '~/types';
 
-import type { V2_MetaFunction } from "@remix-run/node";
+import type {V2_MetaFunction} from '@remix-run/node';
 
 type ActionData = {
-  fields: { text?: string },
-  fieldErrors: { text?: string },
-  formError?: string
-}
+  fields: {text?: string};
+  fieldErrors: {text?: string};
+  formError?: string;
+};
 
 let editId = -1;
 
 // This function will only be present on the server and will run there.
 // It is triggered by all non-GET requests to this route.
 // Note how the front and back end are implemented in the same file.
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({request}) => {
   try {
     // No need to use the Fetch API or axios because
     // we are already running in the server.
@@ -53,31 +50,31 @@ export const action: ActionFunction = async ({ request }) => {
     // const values = Object.fromEntries(formData);
     // const { addText, doneId, doneValue, intent, updateText } = values;
 
-    if (intent === "add") {
+    if (intent === 'add') {
       await addTodo(addText);
-    } else if (intent?.startsWith("delete-")) {
+    } else if (intent?.startsWith('delete-')) {
       await deleteSelectedTodo(intent);
-    } else if (intent?.startsWith("edit-")) {
+    } else if (intent?.startsWith('edit-')) {
       await editTodo(intent);
-    } else if (intent?.startsWith("update-")) {
+    } else if (intent?.startsWith('update-')) {
       const id = getId(intent);
-      const todo: Todo = { id, text: updateText }
+      const todo: Todo = {id, text: updateText};
       await updateTodo(todo);
       editId = -1;
-    };
+    }
 
     if (doneId) {
       // TypeScript complains that the "text" property is missing,
       // but we don't want to specify it in this case.
       // We want to keep the current value, but we don't know what it is here.
-      const todo: Todo = { id: doneId, done: doneValue };
+      const todo: Todo = {id: doneId, done: doneValue};
       await updateTodo(todo);
     }
 
     return {}; // stays on current page
     // return redirect('/todos'); // redirects to another page
   } catch (e) {
-    console.error("todos.tsx action:", e);
+    console.error('todos.tsx action:', e);
   }
 };
 
@@ -86,12 +83,12 @@ async function addTodo(text: string) {
 
   const fieldErrors = {
     text: validateText(text)
-  }
+  };
   if (Object.values(fieldErrors).some(Boolean)) {
-    return { formError: "Invalid data found.", fieldErrors };
+    return {formError: 'Invalid data found.', fieldErrors};
   }
 
-  await createTodo({ text });
+  await createTodo({text});
 }
 
 async function deleteSelectedTodo(intent: string) {
@@ -108,12 +105,12 @@ function getId(intent: string): number {
 }
 
 function handleChange() {
-  const input = document.querySelector("#color-input") as HTMLInputElement
+  const input = document.querySelector('#color-input') as HTMLInputElement;
   if (input) sessionStorage.setItem('color', input.value);
 }
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: styles },
+  {rel: 'stylesheet', href: styles},
   ...headingLinks(),
   ...todoRowLinks()
   // ...todoFormLinks(),
@@ -134,35 +131,35 @@ export async function loader() {
   // return json(todos);
 
   const todos = await getTodos();
-  return { editId, todos };
+  return {editId, todos};
 }
 
 export const meta: V2_MetaFunction = () => {
-  return [{ title: "Todos" }]; // sets the page title
+  return [{title: 'Todos'}]; // sets the page title
 };
 
 function validateText(text: string | undefined) {
   if (!text || text.length < 3) {
-    return "Todo text must be at least three characters."
+    return 'Todo text must be at least three characters.';
   }
 }
 
 export default function Todos() {
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
 
-  const { editId, todos } = useLoaderData();
+  const {editId, todos} = useLoaderData();
   todos.sort((t1: Todo, t2: Todo) => t1.text.localeCompare(t2.text));
 
   const actionData = useActionData<ActionData>();
 
   const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
+  const isSubmitting = navigation.state === 'submitting';
 
-  const { formError, fieldErrors } = actionData ?? {};
-  const textError = fieldErrors?.text
+  const {formError, fieldErrors} = actionData ?? {};
+  const textError = fieldErrors?.text;
 
   function setIntent(intent: string) {
-    setInputValue("#intent", intent);
+    setInputValue('#intent', intent);
     submitForm('#todo-form');
   }
 
@@ -204,14 +201,12 @@ export default function Todos() {
               name="intent"
               value="add"
             >
-              {isSubmitting ? "Adding ..." : "Add"}
+              {isSubmitting ? 'Adding ...' : 'Add'}
             </button>
             {isSubmitting && <div id="spinner"></div>}
           </div>
 
-          {textError && (
-            <div className="error">{textError}</div>
-          )}
+          {textError && <div className="error">{textError}</div>}
 
           {formError && <div className="error">{formError}</div>}
         </div>
@@ -229,15 +224,17 @@ export default function Todos() {
         <input type="hidden" id="doneId" name="doneId" />
         <input type="hidden" id="doneValue" name="doneValue" />
         <input type="hidden" id="intent" name="intent" />
-      </Form >
+      </Form>
       <Form method="post" id="color-form" onChange={handleChange}>
         <input
           id="color-input"
           name="color"
           placeholder="enter your favorite color"
         />
-        <button name="intent" value="color">Save Color</button>
+        <button name="intent" value="color">
+          Save Color
+        </button>
       </Form>
-    </div >
+    </div>
   );
 }

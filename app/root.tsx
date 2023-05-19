@@ -1,7 +1,4 @@
-import {
-  type ErrorBoundaryComponent,
-  type LinksFunction
-} from '@remix-run/node';
+import {type ErrorBoundaryComponent, type LinksFunction} from '@remix-run/node';
 
 import {
   type CatchBoundaryComponent,
@@ -13,12 +10,12 @@ import {
   Scripts,
   ScrollRestoration,
   useCatch
-} from "@remix-run/react";
+} from '@remix-run/react';
 
 import MainNav from '~/components/MainNav';
 import styles from '~/styles/global.css';
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
+export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
 
 // Remix creates this component when an error occurs.
 // It replaces the content that would otherwise be rendered by <Outlet />.
@@ -27,16 +24,18 @@ export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 // for page-specific error rendering.
 // For page-specific error boundaries,
 // only the body content should be specified.
-export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
+export const ErrorBoundary: ErrorBoundaryComponent = ({error}) => {
   console.log('root.tsx ErrorBoundary: error =', error);
   return (
     <main className="error">
       <h1>An error occurred.</h1>
-      <p>{error?.message ?? "unknown"}</p>
-      <p>Back to <Link to="/">safety</Link>.</p>
+      <p>{error?.message ?? 'unknown'}</p>
+      <p>
+        Back to <Link to="/">safety</Link>.
+      </p>
     </main>
   );
-}
+};
 
 // This is similar to ErrorBoundary and like that we can define it
 // in the root component or in pages for page-specific handling.
@@ -52,11 +51,13 @@ export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
 // }
 export const CatchBoundary: CatchBoundaryComponent = () => {
   const response = useCatch();
-  const message = response.data?.message || "unspecified error";
-  return <main>
-    <p>{message}</p>
-  </main>
-}
+  const message = response.data?.message || 'unspecified error';
+  return (
+    <main>
+      <p>{message}</p>
+    </main>
+  );
+};
 
 export default function App() {
   return (
@@ -89,9 +90,9 @@ export default function App() {
 
         {/* This enables use of live reload so
             the browser updates when changes are saved. */}
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        {process.env.NODE_ENV === 'development' && <LiveReload />}
         {/* </AppContext.Provider> */}
       </body>
-    </html >
+    </html>
   );
 }

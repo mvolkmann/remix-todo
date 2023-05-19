@@ -1,8 +1,8 @@
-import type { V2_MetaFunction } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import type {V2_MetaFunction} from '@remix-run/node';
+import {Link} from '@remix-run/react';
 
 export const meta: V2_MetaFunction = () => {
-  return [{ title: "New Remix App" }];
+  return [{title: 'New Remix App'}];
 };
 
 export default function Index() {
@@ -11,7 +11,7 @@ export default function Index() {
     color = sessionStorage.getItem('color') as string;
   }
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
+    <div style={{fontFamily: 'system-ui, sans-serif', lineHeight: '1.4'}}>
       <h1>Welcome to Remix!</h1>
       <ul>
         <li>

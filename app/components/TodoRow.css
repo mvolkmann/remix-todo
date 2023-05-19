@@ -19,6 +19,6 @@
   display: inline-block;
 }
 
-.todo-row input[type=checkbox] {
+.todo-row input[type='checkbox'] {
   margin-right: 1rem;
 }
