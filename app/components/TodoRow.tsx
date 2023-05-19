@@ -1,6 +1,6 @@
 import { type ChangeEvent } from 'react';
-import type { LinksFunction } from '@remix-run/node';
-import type { Todo } from '~/types';
+import { type LinksFunction } from '@remix-run/node';
+import { type Todo } from '~/types';
 import styles from './TodoRow.css';
 import { clickButton } from '~/utils/DOMUtil';
 
@@ -14,6 +14,36 @@ type Props = {
 };
 
 export default function TodoRow({ todo, editing, setIntent, toggleDone }: Props) {
+
+  const buttons = () => (
+    <div className="buttons">
+      {editing ?
+        <>
+          <button
+            className="button-ok"
+            onClick={() => setIntent('update-' + todo.id)}
+          >
+            ✓
+          </button>
+          <button
+            className="button-cancel"
+            onClick={() => setIntent('edit--1')}
+          >
+            ✖
+          </button>
+        </> :
+        <button
+          className="button-edit"
+          onClick={() => setIntent('edit-' + todo.id)}
+        >
+          ✎
+        </button>
+      }
+      <button name="intent" value={"delete-" + todo.id}>
+        🗑
+      </button>
+    </div>
+  );
 
   function handleKeyUp(event: KeyboardEvent) {
     if (event.key === "Enter") {
@@ -40,33 +70,7 @@ export default function TodoRow({ todo, editing, setIntent, toggleDone }: Props)
         /> :
         <span className={'done-' + todo.done}>{todo.text}</span>
       }
-      <div className="buttons">
-        {editing ?
-          <>
-            <button
-              className="button-ok"
-              onClick={() => setIntent('update-' + todo.id)}
-            >
-              ✓
-            </button>
-            <button
-              className="button-cancel"
-              onClick={() => setIntent('edit--1')}
-            >
-              ✖
-            </button>
-          </> :
-          <button
-            className="button-edit"
-            onClick={() => setIntent('edit-' + todo.id)}
-          >
-            ✎
-          </button>
-        }
-        <button name="intent" value={"delete-" + todo.id}>
-          🗑
-        </button>
-      </div>
+      {buttons()}
     </li>
   );
 }

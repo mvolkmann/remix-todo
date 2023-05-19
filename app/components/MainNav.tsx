@@ -10,12 +10,10 @@ export const action: ActionFunction = async ({ request }) => {
   try {
     const formData = await request.formData();
     const intent = formData.get("intent") as string;
-    console.log('login.tsx action: intent =', intent);
 
     switch (intent) {
       case "sign-out":
-        return { formError: 'Forgot is not implemented yet.' }
-
+        return { formError: 'Sign Out is not implemented yet.' }
     }
     return null; // stays on current page
   } catch (e) {
@@ -38,6 +36,8 @@ function MainNav() {
             <NavLink to="/demo">Demo</NavLink>
           </li>
           <li className="nav-item">
+            {/* Using prefetch="intent" causes todos to load on hover,
+                before the click. */}
             <NavLink prefetch="intent" to="/todos">Todos</NavLink>
           </li>
           <li className="nav-item">
