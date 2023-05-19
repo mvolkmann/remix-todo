@@ -2,7 +2,7 @@ import { createTodo, deleteTodo, getTodos, updateTodo } from '~/utils/todos';
 
 import { useState } from 'react';
 
-import {
+mort {
   type ActionFunction,
   type LinksFunction,
   type LoaderArgs,
@@ -51,8 +51,8 @@ export const action: ActionFunction = async ({ request }) => {
     const updateText = formData.get('updateText') as string;
 
     // This is another way to get data from formData.
-    const values = Object.fromEntries(formData);
-    // const { addText, intent, updateDone, updateText } = values;
+    // const values = Object.fromEntries(formData);
+    // const { addText, doneId, doneValue, intent, updateText } = values;
 
     if (intent === "add") {
       await addTodo(addText);
@@ -162,9 +162,9 @@ export default function Todos() {
   const { formError, fieldErrors } = actionData ?? {};
   const textError = fieldErrors?.text
 
-  function setIntent(intent) {
+  function setIntent(intent: string) {
     setInputValue("#intent", intent);
-    submitForm();
+    submitForm('#todo-form');
   }
 
   function toggleDone(event) {
