@@ -4,6 +4,9 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev",
+    "format": "prettier --write 'app/**/*.{css,ts,tsx}'",
+    "lintx": "eslint --fix --quiet app --ext .ts,.tsx",
+    "lint": "eslint --ext .ts,.tsx app/",
     "start": "remix-serve build",
     "typecheck": "tsc"
   },
