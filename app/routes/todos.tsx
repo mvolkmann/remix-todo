@@ -5,8 +5,7 @@ import { type ChangeEvent, useState } from 'react';
 import {
   type ActionFunction,
   type LinksFunction,
-  type LoaderArgs,
-} from "@remix-run/node";
+} from '@remix-run/node';
 
 import {
   Form,
