@@ -1,7 +1,7 @@
 /*
 These styles are not automatically scoped to the Heading component.
 That is why the "heading" class is being used.
- */
+*/
 .heading h2 {
   color: green;
 }

@@ -101,7 +101,8 @@ async function editTodo(intent: string) {
 }
 
 function getId(intent: string): number {
-  return Number(intent.split("-")[1]);
+  const index = intent.indexOf('-');
+  return index === -1 ? index : Number(intent.substring(index + 1));
 }
 
 function handleChange() {

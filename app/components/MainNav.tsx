@@ -1,7 +1,4 @@
-import {
-  type ActionFunction,
-  redirect
-} from "@remix-run/node";
+import { type ActionFunction } from "@remix-run/node";
 
 import {
   Form,
