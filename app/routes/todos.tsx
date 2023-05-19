@@ -2,7 +2,7 @@ import { createTodo, deleteTodo, getTodos, updateTodo } from '~/utils/todos';
 
 import { useState } from 'react';
 
-mort {
+import {
   type ActionFunction,
   type LinksFunction,
   type LoaderArgs,
