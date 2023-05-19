@@ -1,6 +1,10 @@
-import { useContext } from 'react';
-import { json, type LinksFunction } from '@remix-run/node';
 import {
+  type ErrorBoundaryComponent,
+  type LinksFunction
+} from '@remix-run/node';
+
+import {
+  type CatchBoundaryComponent,
   Link,
   Links,
   LiveReload,
@@ -11,7 +15,6 @@ import {
   useCatch
 } from "@remix-run/react";
 
-import AppContext from '~/AppContext';
 import MainNav from '~/components/MainNav';
 import styles from '~/styles/global.css';
 
@@ -24,8 +27,7 @@ export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 // for page-specific error rendering.
 // For page-specific error boundaries,
 // only the body content should be specified.
-// TODO: Are the html, head, and body tags really needed here?
-export function ErrorBoundary({ error }) {
+export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
   console.log('root.tsx ErrorBoundary: error =', error);
   return (
     <main className="error">
@@ -48,7 +50,7 @@ export function ErrorBoundary({ error }) {
 //     {status: 404, statusText: 'some-status-text'}
 //   );
 // }
-export function CatchBoundary({ error }) {
+export const CatchBoundary: CatchBoundaryComponent = () => {
   const response = useCatch();
   const message = response.data?.message || "unspecified error";
   return <main>
@@ -57,8 +59,6 @@ export function CatchBoundary({ error }) {
 }
 
 export default function App() {
-  const context = useContext(AppContext);
-
   return (
     <html lang="en">
       <head>

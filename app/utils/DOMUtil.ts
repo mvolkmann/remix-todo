@@ -8,6 +8,10 @@ export function setInputValue(selector: string, value: any) {
   if (input) input.value = String(value);
 }
 
+function sleep(seconds: number) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
 export function submitForm(selector: string) {
   const form = document.querySelector(selector) as HTMLFormElement;
   if (form) form.submit();

@@ -1,6 +1,6 @@
 import { createTodo, deleteTodo, getTodos, updateTodo } from '~/utils/todos';
 
-import { useState } from 'react';
+import { type ChangeEvent, useState } from 'react';
 
 import {
   type ActionFunction,
@@ -68,6 +68,9 @@ export const action: ActionFunction = async ({ request }) => {
     };
 
     if (doneId) {
+      // TypeScript complains that the "text" property is missing,
+      // but we don't want to specify it in this case.
+      // We want to keep the current value, but we don't know what it is here.
       const todo: Todo = { id: doneId, done: doneValue };
       await updateTodo(todo);
     }
@@ -117,10 +120,11 @@ export const links: LinksFunction = () => [
   // ...todoFormLinks(),
 ];
 
-export async function loader({ request }: LoaderArgs) {
+// export async function loader({ request }: LoaderArgs) {
+export async function loader() {
   // await sleep(1); // to demonstrate slow fetching
 
-  // Could authenticate with something like
+  // We could authenticate with something like
   // await requireUserId(request);
   // which could throw if the user is not authenticated.
 
@@ -137,10 +141,6 @@ export async function loader({ request }: LoaderArgs) {
 export const meta: V2_MetaFunction = () => {
   return [{ title: "Todos" }]; // sets the page title
 };
-
-function sleep(seconds: number) {
-  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
-}
 
 function validateText(text: string | undefined) {
   if (!text || text.length < 3) {
@@ -167,7 +167,7 @@ export default function Todos() {
     submitForm('#todo-form');
   }
 
-  function toggleDone(event) {
+  function toggleDone(event: ChangeEvent<HTMLInputElement>) {
     // Determine the id and done state of the todo that was toggled.
     const checkbox = event.target;
     // checkbox.name will be "done-" followed by the id of the todo.

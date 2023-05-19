@@ -1,4 +1,4 @@
-import { type ChangeEvent } from 'react';
+import { type ChangeEvent, type KeyboardEventHandler } from 'react';
 import { type LinksFunction } from '@remix-run/node';
 import { type Todo } from '~/types';
 import styles from './TodoRow.css';
@@ -10,7 +10,7 @@ type Props = {
   todo: Todo;
   editing: boolean;
   setIntent: (intent: string) => void;
-  toggleDone: (event: ChangeEvent) => void;
+  toggleDone: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export default function TodoRow({ todo, editing, setIntent, toggleDone }: Props) {
@@ -45,7 +45,7 @@ export default function TodoRow({ todo, editing, setIntent, toggleDone }: Props)
     </div>
   );
 
-  function handleKeyUp(event: KeyboardEvent) {
+  const handleKeyUp: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === "Enter") {
       clickButton('.button-ok');
     } else if (event.key === "Escape") {
