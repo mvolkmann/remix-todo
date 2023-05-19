@@ -178,7 +178,7 @@ export default function Todos() {
     setInputValue('#doneId', id);
     setInputValue('#doneValue', done);
 
-    submitForm();
+    submitForm('#todo-form');
   }
 
   const uncompleted = todos.filter((t: Todo) => !t.done).length;
