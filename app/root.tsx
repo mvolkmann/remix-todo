@@ -1,4 +1,4 @@
-import {type ErrorBoundaryComponent, type LinksFunction} from '@remix-run/node';
+import { type ErrorBoundaryComponent, type LinksFunction } from '@remix-run/node';
 
 import {
   type CatchBoundaryComponent,
@@ -15,7 +15,7 @@ import {
 import MainNav from '~/components/MainNav';
 import styles from '~/styles/global.css';
 
-export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
+export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
 
 // Remix creates this component when an error occurs.
 // It replaces the content that would otherwise be rendered by <Outlet />.
@@ -24,7 +24,7 @@ export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
 // for page-specific error rendering.
 // For page-specific error boundaries,
 // only the body content should be specified.
-export const ErrorBoundary: ErrorBoundaryComponent = ({error}) => {
+export const ErrorBoundary = ({ error }) => {
   console.log('root.tsx ErrorBoundary: error =', error);
   return (
     <main className="error">

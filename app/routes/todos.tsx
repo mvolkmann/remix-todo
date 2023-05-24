@@ -1,8 +1,8 @@
-import {createTodo, deleteTodo, getTodos, updateTodo} from '~/utils/todos';
+import { createTodo, deleteTodo, getTodos, updateTodo } from '~/utils/todos';
 
-import {type ChangeEvent, useState} from 'react';
+import { type ChangeEvent, useState } from 'react';
 
-import {type ActionFunction, type LinksFunction} from '@remix-run/node';
+import { type ActionFunction, type LinksFunction } from '@remix-run/node';
 
 import {
   Form,
@@ -11,19 +11,19 @@ import {
   useNavigation
 } from '@remix-run/react';
 
-import Heading, {links as headingLinks} from '~/components/Heading';
-import TodoRow, {links as todoRowLinks} from '~/components/TodoRow';
-import {setInputValue, submitForm} from '~/utils/DOMUtil';
+import Heading, { links as headingLinks } from '~/components/Heading';
+import TodoRow, { links as todoRowLinks } from '~/components/TodoRow';
+import { setInputValue, submitForm } from '~/utils/DOMUtil';
 
 import styles from '~/styles/todos.css';
 
-import type {Todo} from '~/types';
+import type { Todo } from '~/types';
 
-import type {V2_MetaFunction} from '@remix-run/node';
+import type { V2_MetaFunction } from '@remix-run/node';
 
 type ActionData = {
-  fields: {text?: string};
-  fieldErrors: {text?: string};
+  fields: { text?: string };
+  fieldErrors: { text?: string };
   formError?: string;
 };
 
@@ -32,7 +32,7 @@ let editId = -1;
 // This function will only be present on the server and will run there.
 // It is triggered by all non-GET requests to this route.
 // Note how the front and back end are implemented in the same file.
-export const action: ActionFunction = async ({request}) => {
+export const action: ActionFunction = async ({ request }) => {
   try {
     // No need to use the Fetch API or axios because
     // we are already running in the server.
@@ -58,7 +58,7 @@ export const action: ActionFunction = async ({request}) => {
       await editTodo(intent);
     } else if (intent?.startsWith('update-')) {
       const id = getId(intent);
-      const todo: Todo = {id, text: updateText};
+      const todo: Todo = { id, text: updateText };
       await updateTodo(todo);
       editId = -1;
     }
@@ -67,7 +67,7 @@ export const action: ActionFunction = async ({request}) => {
       // TypeScript complains that the "text" property is missing,
       // but we don't want to specify it in this case.
       // We want to keep the current value, but we don't know what it is here.
-      const todo: Todo = {id: doneId, done: doneValue};
+      const todo: Todo = { id: doneId, done: doneValue };
       await updateTodo(todo);
     }
 
@@ -85,10 +85,10 @@ async function addTodo(text: string) {
     text: validateText(text)
   };
   if (Object.values(fieldErrors).some(Boolean)) {
-    return {formError: 'Invalid data found.', fieldErrors};
+    return { formError: 'Invalid data found.', fieldErrors };
   }
 
-  await createTodo({text});
+  await createTodo({ text });
 }
 
 async function deleteSelectedTodo(intent: string) {
@@ -110,10 +110,9 @@ function handleChange() {
 }
 
 export const links: LinksFunction = () => [
-  {rel: 'stylesheet', href: styles},
+  { rel: 'stylesheet', href: styles },
   ...headingLinks(),
   ...todoRowLinks()
-  // ...todoFormLinks(),
 ];
 
 // export async function loader({ request }: LoaderArgs) {
@@ -131,11 +130,11 @@ export async function loader() {
   // return json(todos);
 
   const todos = await getTodos();
-  return {editId, todos};
+  return { editId, todos };
 }
 
 export const meta: V2_MetaFunction = () => {
-  return [{title: 'Todos'}]; // sets the page title
+  return [{ title: 'Todos' }]; // sets the page title
 };
 
 function validateText(text: string | undefined) {
@@ -147,7 +146,7 @@ function validateText(text: string | undefined) {
 export default function Todos() {
   const [text, setText] = useState('');
 
-  const {editId, todos} = useLoaderData();
+  const { editId, todos } = useLoaderData();
   todos.sort((t1: Todo, t2: Todo) => t1.text.localeCompare(t2.text));
 
   const actionData = useActionData<ActionData>();
@@ -155,7 +154,7 @@ export default function Todos() {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
 
-  const {formError, fieldErrors} = actionData ?? {};
+  const { formError, fieldErrors } = actionData ?? {};
   const textError = fieldErrors?.text;
 
   function setIntent(intent: string) {
