@@ -3,3 +3,8 @@ export type Todo = {
   text: string;
   done?: boolean;
 };
+
+export type Todos = {
+  editId: number;
+  todos: Todo[];
+};

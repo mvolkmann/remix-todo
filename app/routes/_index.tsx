@@ -7,7 +7,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  const [color, setColor] = useState('unknown');
+  const [color, setColor] = useState('');
 
   useEffect(() => {
     if (typeof sessionStorage !== 'undefined') {

@@ -15,7 +15,7 @@ import {setInputValue, submitForm} from '~/utils/DOMUtil';
 
 import styles from '~/styles/todos.css?url';
 
-import type {Todo} from '~/types';
+import type {Todo, Todos} from '~/types';
 
 import type {MetaFunction} from '@remix-run/node';
 
@@ -137,10 +137,10 @@ function validateText(text: string | undefined) {
 }
 
 export default function Todos() {
-  const [color, setColor] = useState('unknown');
+  const [color, setColor] = useState('');
   const [text, setText] = useState('');
 
-  const {editId, todos} = useLoaderData();
+  const {editId, todos} = useLoaderData<Todos>();
   todos.sort((t1: Todo, t2: Todo) => t1.text.localeCompare(t2.text));
 
   const actionData = useActionData<ActionData>();
