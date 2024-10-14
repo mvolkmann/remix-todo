@@ -6,29 +6,30 @@
     "dev": "remix dev",
     "format": "prettier --write 'app/**/*.{css,ts,tsx}'",
     "lint": "eslint --fix --ext .js,.ts,.tsx app/",
+    "reinstall": "rm -rf node_modules && rm package-lock.json && npm install",
     "start": "remix-serve build",
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@prisma/client": "^4.14.1",
-    "@remix-run/css-bundle": "^1.16.0",
-    "@remix-run/node": "^1.16.0",
-    "@remix-run/react": "^1.16.0",
-    "@remix-run/serve": "^1.16.0",
-    "isbot": "^3.6.8",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@prisma/client": "^5.20.0",
+    "@remix-run/css-bundle": "^2.13.1",
+    "@remix-run/node": "^2.13.1",
+    "@remix-run/react": "^2.13.1",
+    "@remix-run/serve": "^2.13.1",
+    "isbot": "^5.1.17",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@remix-run/dev": "^1.16.0",
-    "@remix-run/eslint-config": "^1.16.0",
-    "@types/node": "^20.2.1",
-    "@types/react": "^18.0.35",
-    "@types/react-dom": "^18.0.11",
-    "eslint": "^8.38.0",
-    "prisma": "^4.14.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.4"
+    "@remix-run/dev": "^2.13.1",
+    "@remix-run/eslint-config": "^2.13.1",
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "eslint": "^8.0.0",
+    "prisma": "^5.20.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
   },
   "engines": {
     "node": ">=14"

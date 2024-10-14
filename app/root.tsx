@@ -1,65 +1,19 @@
-import { type ErrorBoundaryComponent, type LinksFunction } from '@remix-run/node';
-
+import {type LinksFunction} from '@remix-run/node';
 import {
-  type CatchBoundaryComponent,
-  Link,
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
-  useCatch
+  ScrollRestoration
 } from '@remix-run/react';
 
 import MainNav from '~/components/MainNav';
 import styles from '~/styles/global.css';
 
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
+export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
 
-// Remix creates this component when an error occurs.
-// It replaces the content that would otherwise be rendered by <Outlet />.
-// Defining this in the root component makes it usable from any page.
-// This can also be defined differently in each page
-// for page-specific error rendering.
-// For page-specific error boundaries,
-// only the body content should be specified.
-export const ErrorBoundary = ({ error }) => {
-  console.log('root.tsx ErrorBoundary: error =', error);
-  return (
-    <main className="error">
-      <h1>An error occurred.</h1>
-      <p>{error?.message ?? 'unknown'}</p>
-      <p>
-        Back to <Link to="/">safety</Link>.
-      </p>
-    </main>
-  );
-};
-
-// This is similar to ErrorBoundary and like that we can define it
-// in the root component or in pages for page-specific handling.
-// Remix creates this component when a Response object is thrown.
-// If anything other than an error is thrown
-// then ErrorBoundary is used instead of CatchBoundary.
-// One place this could be done is in a loader function.  For example:
-// if (some-condition) {
-//   throw json( // creates a Response object
-//     {message: 'some-message'},
-//     {status: 404, statusText: 'some-status-text'}
-//   );
-// }
-export const CatchBoundary: CatchBoundaryComponent = () => {
-  const response = useCatch();
-  const message = response.data?.message || 'unspecified error';
-  return (
-    <main>
-      <p>{message}</p>
-    </main>
-  );
-};
-
-export default function App() {
+export function Layout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en">
       <head>
@@ -78,8 +32,8 @@ export default function App() {
         <header>
           <MainNav />
         </header>
-        {/* This renders the content of the current page. */}
-        <Outlet />
+
+        {children}
 
         {/* This restores the scrollbar position
             when returning to a previous page. */}
@@ -91,8 +45,11 @@ export default function App() {
         {/* This enables use of live reload so
             the browser updates when changes are saved. */}
         {process.env.NODE_ENV === 'development' && <LiveReload />}
-        {/* </AppContext.Provider> */}
       </body>
     </html>
   );
+}
+
+export default function App() {
+  return <Outlet />;
 }
