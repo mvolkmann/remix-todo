@@ -2,14 +2,14 @@
 import {
   type ActionFunction,
   type LinksFunction,
-  type V2_MetaFunction,
+  type MetaFunction,
   redirect
 } from '@remix-run/node';
 
 import {Form, useActionData, useNavigation} from '@remix-run/react';
 
 // import AppContext from '~/AppContext';
-import styles from '~/styles/login.css';
+import styles from '~/styles/login.css?url';
 
 type ActionData = {
   fields: {password?: string; username?: string};
@@ -19,7 +19,7 @@ type ActionData = {
 
 export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [{title: 'Login'}];
 };
 

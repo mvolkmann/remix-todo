@@ -1,10 +1,10 @@
-import { type ChangeEvent, type KeyboardEventHandler } from 'react';
-import { type LinksFunction } from '@remix-run/node';
-import { type Todo } from '~/types';
-import styles from './TodoRow.css';
-import { clickButton } from '~/utils/DOMUtil';
+import {type ChangeEvent, type KeyboardEventHandler} from 'react';
+import {type LinksFunction} from '@remix-run/node';
+import {type Todo} from '~/types';
+import styles from './TodoRow.css?url';
+import {clickButton} from '~/utils/DOMUtil';
 
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
+export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
 
 type Props = {
   todo: Todo;
@@ -13,7 +13,7 @@ type Props = {
   toggleDone: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
-export default function TodoRow({ todo, editing, setIntent, toggleDone }: Props) {
+export default function TodoRow({todo, editing, setIntent, toggleDone}: Props) {
   const buttons = () => (
     <div className="buttons">
       {editing ? (

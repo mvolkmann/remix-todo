@@ -1,15 +1,14 @@
-import {type LinksFunction} from '@remix-run/node';
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration
 } from '@remix-run/react';
+import {type LinksFunction} from '@remix-run/node';
 
 import MainNav from '~/components/MainNav';
-import styles from '~/styles/global.css';
+import styles from '~/styles/global.css?url';
 
 export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
 
@@ -41,10 +40,6 @@ export function Layout({children}: {children: React.ReactNode}) {
 
         {/* This injects client-side JavaScript code. */}
         <Scripts />
-
-        {/* This enables use of live reload so
-            the browser updates when changes are saved. */}
-        {process.env.NODE_ENV === 'development' && <LiveReload />}
       </body>
     </html>
   );

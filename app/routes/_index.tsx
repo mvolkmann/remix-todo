@@ -1,7 +1,7 @@
-import type {V2_MetaFunction} from '@remix-run/node';
+import type {MetaFunction} from '@remix-run/node';
 import {Link} from '@remix-run/react';
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [{title: 'New Remix App'}];
 };
 
@@ -38,15 +38,13 @@ export default function Index() {
           </a>
         </li>
         <li>
-          <a href="/demo">Demo a</a>
-        </li>
-        <li>
           <Link to="/demo">Demo Link</Link>
         </li>
         <li>
           <Link to="/login">Login</Link>
         </li>
       </ul>
+      <p>color = {color}</p>
       {color && <p>I see you like the color {color}.</p>}
     </div>
   );

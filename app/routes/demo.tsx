@@ -1,4 +1,4 @@
-import type {LinksFunction, V2_MetaFunction} from '@remix-run/node';
+import type {LinksFunction, MetaFunction} from '@remix-run/node';
 
 // Don't need file extension when importing JS/TS files.
 import Heading, {links as headingLinks} from '~/components/Heading';
@@ -6,7 +6,7 @@ import Heading, {links as headingLinks} from '~/components/Heading';
 // If you placed demo.css in the "routes" directory, you will get the error
 // "Cannot read properties of undefined (reading 'filter')".
 // Do need file extension when importing CSS files.
-import styles from '~/styles/demo.css';
+import styles from '~/styles/demo.css?url';
 
 export const links: LinksFunction = () => [
   {rel: 'stylesheet', href: styles},
@@ -14,7 +14,7 @@ export const links: LinksFunction = () => [
   ...headingLinks()
 ];
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [{title: 'Demo Page'}];
 };
 

@@ -1,6 +1,6 @@
 import type {ReactNode} from 'react';
 import type {LinksFunction} from '@remix-run/node';
-import styles from './Heading.css';
+import styles from './Heading.css?url';
 
 // Remix only looks for "links" and "meta" functions in route components.
 // So users of this component need to call this function to get the array
