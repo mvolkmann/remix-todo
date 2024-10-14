@@ -1,8 +1,6 @@
-import {createTodo, deleteTodo, getTodos, updateTodo} from '~/utils/todos';
-
-import {type ChangeEvent, useState} from 'react';
-
+import {type ChangeEvent, useEffect, useState} from 'react';
 import {type ActionFunction, type LinksFunction} from '@remix-run/node';
+import {createTodo, deleteTodo, getTodos, updateTodo} from '~/utils/todos';
 
 import {
   Form,
@@ -104,11 +102,6 @@ function getId(intent: string): number {
   return index === -1 ? index : Number(intent.substring(index + 1));
 }
 
-function handleChange() {
-  const input = document.querySelector('#color-input') as HTMLInputElement;
-  if (input) sessionStorage.setItem('color', input.value);
-}
-
 export const links: LinksFunction = () => [
   {rel: 'stylesheet', href: styles},
   ...headingLinks(),
@@ -144,6 +137,7 @@ function validateText(text: string | undefined) {
 }
 
 export default function Todos() {
+  const [color, setColor] = useState('unknown');
   const [text, setText] = useState('');
 
   const {editId, todos} = useLoaderData();
@@ -156,6 +150,23 @@ export default function Todos() {
 
   const {formError, fieldErrors} = actionData ?? {};
   const textError = fieldErrors?.text;
+
+  useEffect(() => {
+    console.log('todos.tsx useEffect: entered');
+    if (typeof sessionStorage !== 'undefined') {
+      const storedColor = sessionStorage.getItem('color');
+      console.log('todos.tsx useEffect: storedColor =', storedColor);
+      if (storedColor) setColor(storedColor);
+    }
+  }, []);
+
+  function handleChange() {
+    const input = document.querySelector('#color-input') as HTMLInputElement;
+    if (input) {
+      setColor(input.value);
+      sessionStorage.setItem('color', input.value);
+    }
+  }
 
   function setIntent(intent: string) {
     setInputValue('#intent', intent);
@@ -226,6 +237,7 @@ export default function Todos() {
       </Form>
       <Form method="post" id="color-form" onChange={handleChange}>
         <input
+          defaultValue={color}
           id="color-input"
           name="color"
           placeholder="enter your favorite color"
