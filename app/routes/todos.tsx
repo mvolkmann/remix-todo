@@ -13,8 +13,6 @@ import Heading, {links as headingLinks} from '~/components/Heading';
 import TodoRow, {links as todoRowLinks} from '~/components/TodoRow';
 import {setInputValue, submitForm} from '~/utils/DOMUtil';
 
-import styles from '~/styles/todos.css?url';
-
 import type {Todo, Todos} from '~/types';
 
 import type {MetaFunction} from '@remix-run/node';
@@ -103,7 +101,6 @@ function getId(intent: string): number {
 }
 
 export const links: LinksFunction = () => [
-  {rel: 'stylesheet', href: styles},
   ...headingLinks(),
   ...todoRowLinks()
 ];
@@ -201,10 +198,11 @@ export default function Todos() {
       <Heading>Todos</Heading>
       <div>{status}</div>
       <Form method="post" id="todo-form" reloadDocument>
-        <div className="add-area">
-          <div className="row">
+        <div className="bg-gray-400 flex flex-col gap-4 items-start p-4">
+          <div className="flex gap-4 items-center">
             {/* Note that the "id" prop is not needed, only "name". */}
             <input
+              className="w-80"
               name="addText"
               onChange={e => setText(e.target.value)}
               placeholder="enter new todo here"
@@ -224,7 +222,7 @@ export default function Todos() {
 
           {formError && <div className="error">{formError}</div>}
         </div>
-        <ul>
+        <ul className="list-none ml-0 pl-0">
           {todos.map((todo: Todo) => (
             <TodoRow
               key={todo.id}
@@ -241,6 +239,7 @@ export default function Todos() {
       </Form>
       <Form method="post" id="color-form" onSubmit={handleSubmit}>
         <input
+          className="mr-4"
           defaultValue={color}
           id="color-input"
           name="color"
