@@ -15,7 +15,7 @@ type Props = {
 
 export default function TodoRow({todo, editing, setIntent, toggleDone}: Props) {
   const buttons = () => (
-    <div className="buttons">
+    <div className="inline-flex items-center">
       {editing ? (
         <>
           <button
@@ -56,6 +56,7 @@ export default function TodoRow({todo, editing, setIntent, toggleDone}: Props) {
   return (
     <li className="todo-row" key={todo.id}>
       <input
+        className="mr-4"
         name={'done-' + todo.id}
         type="checkbox"
         checked={todo.done}
