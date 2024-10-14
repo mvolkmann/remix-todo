@@ -8,9 +8,13 @@ import {
 import {type LinksFunction} from '@remix-run/node';
 
 import MainNav from '~/components/MainNav';
-import styles from '~/styles/global.css?url';
+import globalStyles from '~/styles/global.css?url';
+import tailwindStyles from '~/styles/tailwind.css?url';
 
-export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
+export const links: LinksFunction = () => [
+  {rel: 'stylesheet', href: tailwindStyles},
+  {rel: 'stylesheet', href: globalStyles}
+];
 
 export function Layout({children}: {children: React.ReactNode}) {
   return (
@@ -26,7 +30,7 @@ export function Layout({children}: {children: React.ReactNode}) {
             "links" functions defined in routes like this one. */}
         <Links />
       </head>
-      <body>
+      <body className="font-sans m-4">
         {/* <AppContext.Provider value={username, setUsername, password, setPassword}> */}
         <header>
           <MainNav />
