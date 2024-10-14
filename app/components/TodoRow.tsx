@@ -70,7 +70,9 @@ export default function TodoRow({todo, editing, setIntent, toggleDone}: Props) {
           onKeyUp={handleKeyUp}
         />
       ) : (
-        <span className={'done-' + todo.done}>{todo.text}</span>
+        <span className={`done-${todo.done} inline-block -translate-y-0.5`}>
+          {todo.text}
+        </span>
       )}
       {buttons()}
     </li>
