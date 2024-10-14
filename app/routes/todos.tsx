@@ -137,6 +137,7 @@ function validateText(text: string | undefined) {
 }
 
 export default function Todos() {
+  const [changingColor, setChangingColor] = useState(false);
   const [color, setColor] = useState('');
   const [text, setText] = useState('');
 
@@ -152,20 +153,23 @@ export default function Todos() {
   const textError = fieldErrors?.text;
 
   useEffect(() => {
-    console.log('todos.tsx useEffect: entered');
     if (typeof sessionStorage !== 'undefined') {
       const storedColor = sessionStorage.getItem('color');
-      console.log('todos.tsx useEffect: storedColor =', storedColor);
       if (storedColor) setColor(storedColor);
     }
   }, []);
 
   function handleChange() {
+    setChangingColor(true);
+  }
+
+  function handleSubmit() {
     const input = document.querySelector('#color-input') as HTMLInputElement;
     if (input) {
       setColor(input.value);
       sessionStorage.setItem('color', input.value);
     }
+    setChangingColor(false);
   }
 
   function setIntent(intent: string) {
@@ -235,14 +239,15 @@ export default function Todos() {
         <input type="hidden" id="doneValue" name="doneValue" />
         <input type="hidden" id="intent" name="intent" />
       </Form>
-      <Form method="post" id="color-form" onChange={handleChange}>
+      <Form method="post" id="color-form" onSubmit={handleSubmit}>
         <input
           defaultValue={color}
           id="color-input"
           name="color"
+          onChange={handleChange}
           placeholder="enter your favorite color"
         />
-        <button name="intent" value="color">
+        <button disabled={!changingColor} name="intent" value="color">
           Save Color
         </button>
       </Form>
