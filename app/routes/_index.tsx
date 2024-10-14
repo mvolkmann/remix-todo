@@ -1,3 +1,4 @@
+import {useEffect, useState} from 'react';
 import type {MetaFunction} from '@remix-run/node';
 import {Link} from '@remix-run/react';
 
@@ -6,10 +7,15 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  let color = 'unknown';
-  if (typeof sessionStorage !== 'undefined') {
-    color = sessionStorage.getItem('color') as string;
-  }
+  const [color, setColor] = useState('unknown');
+
+  useEffect(() => {
+    if (typeof sessionStorage !== 'undefined') {
+      const storedColor = sessionStorage.getItem('color');
+      if (storedColor) setColor(storedColor);
+    }
+  }, []);
+
   return (
     <div style={{fontFamily: 'system-ui, sans-serif', lineHeight: '1.4'}}>
       <h1>Welcome to Remix!</h1>
@@ -44,7 +50,6 @@ export default function Index() {
           <Link to="/login">Login</Link>
         </li>
       </ul>
-      <p>color = {color}</p>
       {color && <p>I see you like the color {color}.</p>}
     </div>
   );
