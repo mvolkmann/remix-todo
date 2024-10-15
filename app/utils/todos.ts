@@ -13,6 +13,15 @@ export function getTodos(): Promise<Todo[]> {
   return prisma.todo.findMany();
 }
 
-export function updateTodo(data: Todo) {
-  return prisma.todo.update({where: {id: data.id}, data});
+export async function toggleDone(id: number) {
+  const todo = await prisma.todo.findUnique({where: {id}});
+  return prisma.todo.update({
+    where: {id},
+    data: {done: !todo?.done}
+  });
+}
+
+export function updateTodo(id: number, text: string) {
+  const data = {text};
+  return prisma.todo.update({where: {id}, data});
 }

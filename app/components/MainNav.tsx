@@ -6,6 +6,7 @@ export const action: ActionFunction = async ({request}) => {
   try {
     const formData = await request.formData();
     const intent = formData.get('intent') as string;
+    console.log('MainNav.tsx action: intent =', intent);
 
     switch (intent) {
       case 'sign-out':

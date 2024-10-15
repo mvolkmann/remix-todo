@@ -1,4 +1,4 @@
-import {type ChangeEvent, type KeyboardEventHandler} from 'react';
+import {type KeyboardEventHandler} from 'react';
 import {type LinksFunction} from '@remix-run/node';
 import {type Todo} from '~/types';
 import styles from './TodoRow.css?url';
@@ -10,10 +10,9 @@ type Props = {
   todo: Todo;
   editing: boolean;
   setIntent: (intent: string) => void;
-  toggleDone: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
-export default function TodoRow({todo, editing, setIntent, toggleDone}: Props) {
+export default function TodoRow({todo, editing, setIntent}: Props) {
   const buttons = () => (
     <div className="inline-flex items-center">
       {editing ? (
@@ -26,7 +25,7 @@ export default function TodoRow({todo, editing, setIntent, toggleDone}: Props) {
           </button>
           <button
             className="button-cancel"
-            onClick={() => setIntent('edit--1')}
+            onClick={() => setIntent('edit--1')} // minus 1
           >
             ✖
           </button>
@@ -60,7 +59,7 @@ export default function TodoRow({todo, editing, setIntent, toggleDone}: Props) {
         name={'done-' + todo.id}
         type="checkbox"
         checked={todo.done}
-        onChange={toggleDone}
+        onChange={() => setIntent('toggle-' + todo.id)}
       />
       {editing ? (
         <input

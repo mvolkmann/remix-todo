@@ -1,6 +1,12 @@
-import {type ChangeEvent, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {type ActionFunction, type LinksFunction} from '@remix-run/node';
-import {createTodo, deleteTodo, getTodos, updateTodo} from '~/utils/todos';
+import {
+  createTodo,
+  deleteTodo,
+  getTodos,
+  toggleDone,
+  updateTodo
+} from '~/utils/todos';
 
 import {
   Form,
@@ -32,45 +38,33 @@ export const action: ActionFunction = async ({request}) => {
   try {
     // No need to use the Fetch API or axios because
     // we are already running in the server.
-
     const formData = await request.formData();
-
-    // This is one way to get data from formData.
-    const addText = formData.get('addText') as string;
-    const doneId = Number(formData.get('doneId'));
-    const doneValue = formData.get('doneValue') === 'true';
     const intent = formData.get('intent') as string;
-    const updateText = formData.get('updateText') as string;
 
     // This is another way to get data from formData.
     // const values = Object.fromEntries(formData);
-    // const { addText, doneId, doneValue, intent, updateText } = values;
+    // const { addText, intent, updateText } = values;
 
     if (intent === 'add') {
-      await addTodo(addText);
+      const text = formData.get('addText') as string;
+      await addTodo(text);
     } else if (intent?.startsWith('delete-')) {
-      await deleteSelectedTodo(intent);
+      await deleteTodo(getId(intent));
     } else if (intent?.startsWith('edit-')) {
-      await editTodo(intent);
+      editId = getId(intent); // start editing
+    } else if (intent?.startsWith('toggle-')) {
+      await toggleDone(getId(intent));
     } else if (intent?.startsWith('update-')) {
-      const id = getId(intent);
-      const todo: Todo = {id, text: updateText};
-      await updateTodo(todo);
-      editId = -1;
-    }
-
-    if (doneId) {
-      // TypeScript complains that the "text" property is missing,
-      // but we don't want to specify it in this case.
-      // We want to keep the current value, but we don't know what it is here.
-      const todo: Todo = {id: doneId, done: doneValue};
-      await updateTodo(todo);
+      const text = formData.get('updateText') as string;
+      await updateTodo(getId(intent), text);
+      editId = -1; // stop editing
     }
 
     return {}; // stays on current page
     // return redirect('/todos'); // redirects to another page
   } catch (e) {
     console.error('todos.tsx action:', e);
+    return {formError: 'Something went wrong. Please try again.'};
   }
 };
 
@@ -85,14 +79,6 @@ async function addTodo(text: string) {
   }
 
   await createTodo({text});
-}
-
-async function deleteSelectedTodo(intent: string) {
-  await deleteTodo(getId(intent));
-}
-
-async function editTodo(intent: string) {
-  editId = getId(intent);
 }
 
 function getId(intent: string): number {
@@ -174,6 +160,7 @@ export default function Todos() {
     submitForm('#todo-form');
   }
 
+  /*
   function toggleDone(event: ChangeEvent<HTMLInputElement>) {
     // Determine the id and done state of the todo that was toggled.
     const checkbox = event.target;
@@ -185,9 +172,9 @@ export default function Todos() {
     // This seems like a hacky approach.
     setInputValue('#doneId', id);
     setInputValue('#doneValue', done);
-
-    submitForm('#todo-form');
+    setIntent('toggle-' + id);
   }
+  */
 
   const uncompleted = todos.filter((t: Todo) => !t.done).length;
   const status = `${uncompleted} of ${todos.length} remaining`;
@@ -229,12 +216,9 @@ export default function Todos() {
               todo={todo}
               editing={todo.id === editId}
               setIntent={setIntent}
-              toggleDone={toggleDone}
             />
           ))}
         </ul>
-        <input type="hidden" id="doneId" name="doneId" />
-        <input type="hidden" id="doneValue" name="doneValue" />
         <input type="hidden" id="intent" name="intent" />
       </Form>
       <Form method="post" id="color-form" onSubmit={handleSubmit}>
