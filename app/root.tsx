@@ -1,4 +1,11 @@
 import {
+  type ActionFunction,
+  type LinksFunction,
+  type LoaderFunctionArgs,
+  json,
+  redirect
+} from '@remix-run/node';
+import {
   Links,
   Meta,
   Outlet,
@@ -6,33 +13,29 @@ import {
   ScrollRestoration,
   useLoaderData
 } from '@remix-run/react';
-import {
-  type ActionFunction,
-  type LinksFunction,
-  type LoaderFunctionArgs,
-  json
-} from '@remix-run/node';
 
 import MainNav from '~/components/MainNav';
 import globalStyles from '~/styles/global.css?url';
 import tailwindStyles from '~/styles/tailwind.css?url';
-import {getSession} from './sessions';
+import {commitSession, getSession} from './sessions';
 
 export const links: LinksFunction = () => [
-  {rel: 'stylesheet', href: tailwindStyles},
-  {rel: 'stylesheet', href: globalStyles}
+  {rel: 'stylesheet', href: tailwindStyles, as: 'style'},
+  {rel: 'stylesheet', href: globalStyles, as: 'style'}
 ];
 
 export const action: ActionFunction = async ({request}) => {
   try {
     const formData = await request.formData();
     const intent = formData.get('intent') as string;
-    console.log('root.tsx action: intent =', intent);
-
     switch (intent) {
       case 'sign-out':
         console.log('MainNav.tsx action: got sign-out intent');
-      //return redirect('/login');
+        const session = await getSession(request.headers.get('Cookie'));
+        session.set('username', '');
+        return redirect('/login', {
+          headers: {'Set-Cookie': await commitSession(session)}
+        });
     }
     return {}; // stays on current page
   } catch (e) {
@@ -51,7 +54,6 @@ export async function loader({request}: LoaderFunctionArgs) {
 export function Layout({children}: {children: React.ReactNode}) {
   const data = useLoaderData<typeof loader>();
   const {username} = data ?? {};
-  console.log('root.tsx Layout: username =', username);
   return (
     <html lang="en">
       <head>

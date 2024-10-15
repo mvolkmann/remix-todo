@@ -11,7 +11,7 @@ import {
 
 import {Form, useActionData, useNavigation} from '@remix-run/react';
 
-import {getSession, commitSession} from '../sessions';
+import {commitSession, getSession} from '../sessions';
 
 import styles from '~/styles/login.css?url';
 
@@ -21,7 +21,9 @@ type ActionData = {
   formError?: string;
 };
 
-export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
+export const links: LinksFunction = () => [
+  {rel: 'stylesheet', href: styles, as: 'style'}
+];
 
 export const meta: MetaFunction = () => {
   return [{title: 'Login'}];
@@ -69,8 +71,6 @@ export const action: ActionFunction = async ({request}: ActionFunctionArgs) => {
 
 export async function loader({request}: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get('Cookie'));
-  const username = session.get('username');
-
   if (session.has('username')) {
     // Redirect to the home page if already signed in.
     return redirect('/');

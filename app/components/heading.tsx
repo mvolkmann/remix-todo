@@ -1,6 +1,8 @@
 import type {ReactNode} from 'react';
 import {type LinksFunction} from '@remix-run/node';
 
+//TODO: Why isn't it enough to import this in root.tsx?
+//TODO: If this is removed then any route that uses this component won't render.
 import tailwindStyles from '~/styles/tailwind.css?url';
 
 type Props = {
@@ -8,7 +10,7 @@ type Props = {
 };
 
 export const links: LinksFunction = () => [
-  {rel: 'stylesheet', href: tailwindStyles}
+  {rel: 'stylesheet', href: tailwindStyles, as: 'style'}
 ];
 
 // This is used in demo.tsx and todos.tsx.

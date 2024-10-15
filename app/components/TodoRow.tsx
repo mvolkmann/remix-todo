@@ -4,7 +4,9 @@ import {type Todo} from '~/types';
 import styles from './TodoRow.css?url';
 import {clickButton} from '~/utils/DOMUtil';
 
-export const links: LinksFunction = () => [{rel: 'stylesheet', href: styles}];
+export const links: LinksFunction = () => [
+  {rel: 'stylesheet', href: styles, as: 'style'}
+];
 
 type Props = {
   todo: Todo;
