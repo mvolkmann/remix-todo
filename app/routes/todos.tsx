@@ -156,25 +156,11 @@ export default function Todos() {
   }
 
   function setIntent(intent: string) {
-    setInputValue('#intent', intent);
-    submitForm('#todo-form');
+    const input = document.querySelector('#intent') as HTMLInputElement;
+    if (input) input.value = intent;
+    const form = document.querySelector('#todo-form') as HTMLFormElement;
+    if (form) form.submit();
   }
-
-  /*
-  function toggleDone(event: ChangeEvent<HTMLInputElement>) {
-    // Determine the id and done state of the todo that was toggled.
-    const checkbox = event.target;
-    // checkbox.name will be "done-" followed by the id of the todo.
-    const id = getId(checkbox.name); // number
-    const done = checkbox.checked; // boolean
-
-    // Update the values of hidden inputs so they can be sent in the form post.
-    // This seems like a hacky approach.
-    setInputValue('#doneId', id);
-    setInputValue('#doneValue', done);
-    setIntent('toggle-' + id);
-  }
-  */
 
   const uncompleted = todos.filter((t: Todo) => !t.done).length;
   const status = `${uncompleted} of ${todos.length} remaining`;
@@ -184,7 +170,7 @@ export default function Todos() {
     <div className="todos">
       <Heading>Todos</Heading>
       <div>{status}</div>
-      <Form method="post" id="todo-form" reloadDocument>
+      <Form method="post" id="todo-form">
         <div className="bg-gray-400 flex flex-col gap-4 items-start p-4">
           <div className="flex gap-4 items-center">
             {/* Note that the "id" prop is not needed, only "name". */}

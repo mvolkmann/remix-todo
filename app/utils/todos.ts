@@ -1,19 +1,19 @@
 import type {Todo} from '~/types';
 import {prisma} from './prisma.server';
 
-export function createTodo(data: Todo) {
+export function createTodo(data: Todo): Promise<Todo> {
   return prisma.todo.create({data});
 }
 
-export function deleteTodo(id: number) {
-  return prisma.todo.deleteMany({where: {id}});
+export function deleteTodo(id: number): Promise<Todo> {
+  return prisma.todo.delete({where: {id}});
 }
 
 export function getTodos(): Promise<Todo[]> {
   return prisma.todo.findMany();
 }
 
-export async function toggleDone(id: number) {
+export async function toggleDone(id: number): Promise<Todo> {
   const todo = await prisma.todo.findUnique({where: {id}});
   return prisma.todo.update({
     where: {id},
@@ -21,7 +21,6 @@ export async function toggleDone(id: number) {
   });
 }
 
-export function updateTodo(id: number, text: string) {
-  const data = {text};
-  return prisma.todo.update({where: {id}, data});
+export function updateTodo(id: number, text: string): Promise<Todo> {
+  return prisma.todo.update({where: {id}, data: {text}});
 }
