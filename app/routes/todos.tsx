@@ -6,7 +6,7 @@ import {
   getTodos,
   toggleDone,
   updateTodo
-} from '~/utils/todos';
+} from '~/utils/PrismaUtils';
 
 import {
   Form,

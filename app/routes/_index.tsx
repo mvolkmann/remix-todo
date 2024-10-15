@@ -26,7 +26,7 @@ export default function Index() {
             href="https://remix.run/tutorials/blog"
             rel="noreferrer"
           >
-            15m Quickstart Blog Tutorial
+            Blog Tutorial
           </a>
         </li>
         <li>
@@ -35,7 +35,7 @@ export default function Index() {
             href="https://remix.run/tutorials/jokes"
             rel="noreferrer"
           >
-            Deep Dive Jokes App Tutorial
+            Jokes App Tutorial
           </a>
         </li>
         <li>

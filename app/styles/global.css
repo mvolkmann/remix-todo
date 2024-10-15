@@ -2,6 +2,15 @@
   --button-font-size: 1.5rem;
 }
 
+a {
+  color: blue;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: purple;
+}
+
 button {
   background-color: lightgray;
   border-radius: 0.5rem;
@@ -33,6 +42,8 @@ button:disabled {
 
 h1 {
   color: purple;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 input {
