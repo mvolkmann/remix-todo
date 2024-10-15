@@ -17,7 +17,6 @@ import {
 
 import Heading, {links as headingLinks} from '~/components/Heading';
 import TodoRow, {links as todoRowLinks} from '~/components/TodoRow';
-import {setInputValue, submitForm} from '~/utils/DOMUtil';
 
 import type {Todo, Todos} from '~/types';
 

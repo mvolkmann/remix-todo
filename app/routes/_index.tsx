@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import type {MetaFunction} from '@remix-run/node';
+import {type MetaFunction} from '@remix-run/node';
 import {Link} from '@remix-run/react';
 
 export const meta: MetaFunction = () => {

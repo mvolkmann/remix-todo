@@ -1,14 +1,18 @@
 // import { useContext } from 'react';
 import {
   type ActionFunction,
+  type ActionFunctionArgs,
   type LinksFunction,
+  type LoaderFunctionArgs,
   type MetaFunction,
+  json,
   redirect
 } from '@remix-run/node';
 
 import {Form, useActionData, useNavigation} from '@remix-run/react';
 
-// import AppContext from '~/AppContext';
+import {getSession, commitSession} from '../sessions';
+
 import styles from '~/styles/login.css?url';
 
 type ActionData = {
@@ -23,11 +27,11 @@ export const meta: MetaFunction = () => {
   return [{title: 'Login'}];
 };
 
-export const action: ActionFunction = async ({request}) => {
+export const action: ActionFunction = async ({request}: ActionFunctionArgs) => {
   try {
+    const session = await getSession(request.headers.get('Cookie'));
     const formData = await request.formData();
     const intent = formData.get('intent') as string;
-    console.log('login.tsx action: intent =', intent);
 
     switch (intent) {
       case 'forgot':
@@ -43,20 +47,43 @@ export const action: ActionFunction = async ({request}) => {
         if (Object.values(fieldErrors).some(Boolean)) {
           return {formError: 'Invalid sign in data.', fieldErrors};
         }
+
         const authenticated = username == 'username' && password == 'password';
         if (!authenticated) {
           return {formError: 'Invalid username or password.'};
         }
-        return redirect('/home');
+
+        session.set('username', username);
+        return redirect('/', {
+          headers: {'Set-Cookie': await commitSession(session)}
+        });
 
       case 'sign-up':
         return {formError: 'Sign up is not implemented yet.'};
     }
-    return null; // stays on current page
+    return {}; // stays on current page
   } catch (e) {
     console.error('login.tsx action:', e);
   }
 };
+
+export async function loader({request}: LoaderFunctionArgs) {
+  const session = await getSession(request.headers.get('Cookie'));
+  const username = session.get('username');
+
+  if (session.has('username')) {
+    // Redirect to the home page if already signed in.
+    return redirect('/');
+  }
+
+  const data = {error: session.get('error')};
+
+  return json(data, {
+    headers: {
+      'Set-Cookie': await commitSession(session)
+    }
+  });
+}
 
 function validatePassword(password: string) {
   if (password.length < 8) {
@@ -71,7 +98,6 @@ function validateUsername(username: string) {
 }
 
 export default function Login() {
-  // const { username, setUsername } = useContext(AppContext);
   const actionData = useActionData<ActionData>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
@@ -79,10 +105,9 @@ export default function Login() {
   const {formError, fieldErrors} = actionData ?? {};
   const usernameError = fieldErrors?.username;
   const passwordError = fieldErrors?.password;
-  // console.log('login.tsx Login: context.foo =', context.foo);
 
   return (
-    <div className="login">
+    <div className="bg-orange-100 login p-4">
       <Form method="post" id="login-form">
         <h1>Login</h1>
         <div>
@@ -95,7 +120,7 @@ export default function Login() {
           <input name="password" type="password" />
           {passwordError && <div className="error">{passwordError}</div>}
         </div>
-        <div className="buttons">
+        <div className="flex gap-2">
           <button disabled={isSubmitting} name="intent" value="sign-in">
             {isSubmitting ? 'Signing In' : 'Sign In'}
           </button>

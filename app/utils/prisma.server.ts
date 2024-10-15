@@ -5,6 +5,7 @@ declare global {
   var __db: PrismaClient | undefined;
 }
 
+if (!process) console.log('prisma.server.ts: process is not defined');
 if (process.env.NODE_ENV === 'production') {
   prisma = new PrismaClient();
   prisma.$connect();

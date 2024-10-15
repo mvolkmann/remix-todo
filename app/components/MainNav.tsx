@@ -1,30 +1,16 @@
-import {type ActionFunction} from '@remix-run/node';
-
 import {Form, NavLink, useNavigation} from '@remix-run/react';
 
-export const action: ActionFunction = async ({request}) => {
-  try {
-    const formData = await request.formData();
-    const intent = formData.get('intent') as string;
-    console.log('MainNav.tsx action: intent =', intent);
-
-    switch (intent) {
-      case 'sign-out':
-        return {formError: 'Sign Out is not implemented yet.'};
-    }
-    return null; // stays on current page
-  } catch (e) {
-    console.error('MainNav.tsx action:', e);
-  }
+type Props = {
+  username: string;
 };
 
-function MainNav() {
+export default function MainNav({username}: Props) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
 
   return (
     <nav id="main-nav">
-      <Form action="post" id="nav-form">
+      <Form method="post" id="nav-form">
         <ul>
           <li className="nav-item">
             <NavLink to="/">Home</NavLink>
@@ -39,15 +25,15 @@ function MainNav() {
               Todos
             </NavLink>
           </li>
-          <li className="nav-item">
-            <button disabled={isSubmitting} name="intent" value="sign-out">
-              Sign Out
-            </button>
-          </li>
+          {username && (
+            <li className="nav-item">
+              <button disabled={isSubmitting} name="intent" value="sign-out">
+                Sign Out
+              </button>
+            </li>
+          )}
         </ul>
       </Form>
     </nav>
   );
 }
-
-export default MainNav;
