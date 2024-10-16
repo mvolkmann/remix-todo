@@ -44,7 +44,10 @@ export default function Index() {
           </a>
         </li>
         <li>
-          <Link to="/demo">Demo Link</Link>
+          <Link to="/demo">Demo</Link>
+        </li>
+        <li>
+          <Link to="/pokemon">Pokemon</Link>
         </li>
         <li>
           <Link to="/login">Login</Link>
